@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="backgroundGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4A90E2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#357ABD;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="documentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F8F9FA;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF6B6B;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#E74C3C;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="8" flood-opacity="0.2" flood-color="#000000" stdDeviation="12"/>
+    </filter>
+  </defs>
+  
+  <!-- Background Circle -->
+  <circle cx="512" cy="512" r="480" fill="url(#backgroundGradient)" filter="url(#shadow)"/>
+  
+  <!-- Main Document -->
+  <rect x="280" y="200" width="320" height="420" rx="16" ry="16" fill="url(#documentGradient)" filter="url(#shadow)"/>
+  
+  <!-- Document Corner Fold -->
+  <path d="M 520 200 L 600 200 L 600 280 Z" fill="#E8E9EA"/>
+  <path d="M 520 200 L 520 280 L 600 280 Z" fill="#F0F1F2"/>
+  
+  <!-- Header Section -->
+  <rect x="320" y="240" width="240" height="8" rx="4" fill="#4A90E2"/>
+  <rect x="320" y="260" width="180" height="6" rx="3" fill="#BDC3C7"/>
+  <rect x="320" y="275" width="140" height="6" rx="3" fill="#BDC3C7"/>
+  
+  <!-- Invoice Lines -->
+  <rect x="320" y="320" width="240" height="4" rx="2" fill="#34495E"/>
+  <rect x="320" y="340" width="200" height="4" rx="2" fill="#7F8C8D"/>
+  <rect x="320" y="360" width="220" height="4" rx="2" fill="#7F8C8D"/>
+  <rect x="320" y="380" width="180" height="4" rx="2" fill="#7F8C8D"/>
+  <rect x="320" y="400" width="160" height="4" rx="2" fill="#7F8C8D"/>
+  
+  <!-- Amount Section -->
+  <rect x="320" y="440" width="240" height="2" rx="1" fill="#E8E9EA"/>
+  <rect x="420" y="460" width="140" height="8" rx="4" fill="url(#accentGradient)"/>
+  <rect x="420" y="475" width="100" height="6" rx="3" fill="#E74C3C"/>
+  
+  <!-- Calculator/Pen Icon -->
+  <g transform="translate(640, 480)">
+    <!-- Pen Body -->
+    <rect x="0" y="0" width="80" height="12" rx="6" fill="#34495E" transform="rotate(45 40 6)"/>
+    <rect x="0" y="0" width="60" height="8" rx="4" fill="#4A90E2" transform="rotate(45 30 4)"/>
+    <!-- Pen Tip -->
+    <circle cx="8" cy="8" r="4" fill="#E74C3C" transform="rotate(45 40 6)"/>
+    <!-- Writing Effect -->
+    <path d="M 10 50 Q 20 45 30 50 Q 40 55 50 50" stroke="#4A90E2" stroke-width="2" fill="none" opacity="0.6"/>
+  </g>
+  
+  <!-- Secondary Document (Behind) -->
+  <rect x="320" y="220" width="280" height="380" rx="14" ry="14" fill="#F8F9FA" opacity="0.7"/>
+  
+  <!-- Dollar Sign Icon -->
+  <g transform="translate(720, 300)">
+    <circle cx="0" cy="0" r="40" fill="url(#accentGradient)" filter="url(#shadow)"/>
+    <text x="0" y="8" text-anchor="middle" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="white">$</text>
+  </g>
+  
+  <!-- App Name (Optional - can be removed if not needed) -->
+  <text x="512" y="780" text-anchor="middle" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="white">InvoiceGen</text>
+</svg>

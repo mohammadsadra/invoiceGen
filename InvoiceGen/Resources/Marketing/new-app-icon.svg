@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1024" height="1024" fill="#007AFF"/>
+  
+  <!-- Document with curled corner -->
+  <g transform="translate(200, 150)">
+    <!-- Main document body -->
+    <rect x="0" y="0" width="624" height="724" rx="20" fill="white"/>
+    
+    <!-- Curled corner effect -->
+    <path d="M 604 0 L 624 20 L 604 40 L 584 20 Z" fill="#E5F2FF"/>
+    <path d="M 604 0 L 624 20 L 604 40 L 584 20 Z" fill="white" opacity="0.8"/>
+    
+    <!-- Text lines -->
+    <rect x="60" y="120" width="200" height="8" rx="4" fill="#8E8E93"/>
+    <rect x="60" y="150" width="160" height="8" rx="4" fill="#8E8E93"/>
+    <rect x="60" y="180" width="160" height="8" rx="4" fill="#8E8E93"/>
+    
+    <!-- Currency symbol -->
+    <g transform="translate(400, 200)">
+      <!-- Vertical line -->
+      <rect x="8" y="0" width="4" height="60" rx="2" fill="#1C1C1E"/>
+      <!-- Top horizontal line -->
+      <rect x="0" y="8" width="20" height="4" rx="2" fill="#1C1C1E"/>
+      <!-- Middle horizontal line -->
+      <rect x="0" y="28" width="20" height="4" rx="2" fill="#1C1C1E"/>
+      <!-- Bottom horizontal line -->
+      <rect x="0" y="48" width="20" height="4" rx="2" fill="#1C1C1E"/>
+    </g>
+  </g>
+  
+  <!-- Green checkmark circle -->
+  <g transform="translate(650, 650)">
+    <!-- Circle background -->
+    <circle cx="120" cy="120" r="120" fill="#34C759"/>
+    
+    <!-- Checkmark -->
+    <path d="M 60 120 L 90 150 L 180 60" stroke="white" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </g>
+</svg>
