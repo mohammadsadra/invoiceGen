@@ -17,6 +17,13 @@ struct MainTabView: View {
                         .font(.rtlCaption)
                 }
             
+            SavedInvoicesView()
+                .tabItem {
+                    Image(systemName: "folder")
+                    Text("فاکتورهای ذخیره شده")
+                        .font(.rtlCaption)
+                }
+
             CustomerListView()
                 .tabItem {
                     Image(systemName: "person.3")
@@ -24,17 +31,10 @@ struct MainTabView: View {
                         .font(.rtlCaption)
                 }
             
-            SavedInvoicesView()
-                .tabItem {
-                    Image(systemName: "folder")
-                    Text("فاکتورهای ذخیره شده")
-                        .font(.rtlCaption)
-                }
-            
             CompanySettingsView()
                 .tabItem {
                     Image(systemName: "building.2")
-                    Text("تنظیمات شرکت")
+                    Text("تنظیمات")
                         .font(.rtlCaption)
                 }
         }

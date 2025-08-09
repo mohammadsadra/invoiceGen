@@ -27,46 +27,13 @@ struct CustomerListView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                // Header with Stats
-                VStack(spacing: 16) {
-                    HStack {
-                        VStack(alignment: .trailing, spacing: 4) {
-                            Text("تعداد مشتریان")
-                                .font(.rtlCaption)
-                                .foregroundColor(.rtlSecondary)
-                            Text("\(customerManager.getCustomerCount())")
-                                .font(.rtlTitle)
-                                .fontWeight(.bold)
-                                .foregroundColor(.rtlAccent)
-                        }
-                        
-                        Spacer()
-                        
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("مشتریان اخیر")
-                                .font(.rtlCaption)
-                                .foregroundColor(.rtlSecondary)
-                            Text("\(customerManager.getRecentCustomers(limit: 5).count)")
-                                .font(.rtlTitle)
-                                .fontWeight(.bold)
-                                .foregroundColor(.green)
-                        }
-                    }
-                    .rtlPadding()
-                    .background(Color(.systemBackground))
-                    .rtlCornerRadius(12)
-                    .rtlShadow()
-                }
-                .rtlHorizontalPadding()
-                .rtlPadding(.top)
-                
-                // Search Bar
+                // Search Bar at the top
                 HStack {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(.gray)
                     
                     TextField("جستجوی مشتری...", text: $searchText)
-                        .font(.rtlBody)
+                        .font(.vazirmatenBody)
                         .textFieldStyle(PlainTextFieldStyle())
                     
                     if !searchText.isEmpty {
@@ -78,11 +45,11 @@ struct CustomerListView: View {
                         }
                     }
                 }
-                .rtlPadding()
+                .padding()
                 .background(Color(.systemGray6))
-                .rtlCornerRadius(10)
-                .rtlHorizontalPadding()
-                .rtlPadding(.bottom, 8)
+                .cornerRadius(10)
+                .padding(.horizontal)
+                .padding(.bottom, 8)
                 
                 // Customer List
                 if filteredCustomers.isEmpty {
@@ -94,12 +61,12 @@ struct CustomerListView: View {
                             .foregroundColor(.gray)
                         
                         Text(searchText.isEmpty ? "هیچ مشتری‌ای ثبت نشده است" : "مشتری مورد نظر یافت نشد")
-                            .font(.rtlHeadline)
+                            .font(.vazirmatenHeadline)
                             .foregroundColor(.gray)
                         
                         Text("برای شروع، مشتری جدید ایجاد کنید")
-                            .font(.rtlBody)
-                            .foregroundColor(.rtlSecondary)
+                            .font(.vazirmatenBody)
+                            .foregroundColor(.secondary)
                         
                         Button(action: {
                             showingNewCustomer = true
@@ -108,12 +75,12 @@ struct CustomerListView: View {
                                 Image(systemName: "plus")
                                     .font(.title2)
                                 Text("مشتری جدید")
-                                    .font(.rtlBody)
+                                    .font(.vazirmatenBody)
                             }
-                            .rtlPadding()
+                            .padding()
                             .background(Color.blue)
                             .foregroundColor(.white)
-                            .rtlCornerRadius(10)
+                            .cornerRadius(10)
                         }
                         .frame(maxWidth: .infinity)
                         
@@ -151,7 +118,6 @@ struct CustomerListView: View {
                 }
             }
         }
-        .rtlEnvironment()
         .sheet(isPresented: $showingNewCustomer) {
             CustomerEditView { newCustomer in
                 customerManager.saveCustomer(newCustomer)
@@ -194,26 +160,26 @@ struct CustomerListRow: View {
                 .frame(width: 50, height: 50)
                 .overlay(
                     Text(String(customer.name.prefix(1)))
-                        .font(.rtlHeadline)
+                        .font(.vazirmatenHeadline)
                         .fontWeight(.semibold)
                         .foregroundColor(.blue)
                 )
             
             // Customer Info
-            VStack(alignment: .trailing, spacing: 4) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text(customer.name)
-                    .font(.rtlHeadline)
+                    .font(.vazirmatenHeadline)
                     .fontWeight(.semibold)
-                    .foregroundColor(.rtlPrimary)
+                    .foregroundColor(.primary)
                 
                 if !customer.phone.isEmpty {
                     HStack {
                         Image(systemName: "phone")
                             .font(.caption)
-                            .foregroundColor(.rtlSecondary)
+                            .foregroundColor(.secondary)
                         Text(customer.phone)
-                            .font(.rtlBody)
-                            .foregroundColor(.rtlSecondary)
+                            .font(.vazirmatenBody)
+                            .foregroundColor(.secondary)
                     }
                 }
                 
@@ -221,10 +187,10 @@ struct CustomerListRow: View {
                     HStack {
                         Image(systemName: "envelope")
                             .font(.caption)
-                            .foregroundColor(.rtlSecondary)
+                            .foregroundColor(.secondary)
                         Text(customer.email)
-                            .font(.rtlBody)
-                            .foregroundColor(.rtlSecondary)
+                            .font(.vazirmatenBody)
+                            .foregroundColor(.secondary)
                     }
                 }
                 
@@ -232,10 +198,10 @@ struct CustomerListRow: View {
                     HStack {
                         Image(systemName: "location")
                             .font(.caption)
-                            .foregroundColor(.rtlSecondary)
+                            .foregroundColor(.secondary)
                         Text(customer.city)
-                            .font(.rtlBody)
-                            .foregroundColor(.rtlSecondary)
+                            .font(.vazirmatenBody)
+                            .foregroundColor(.secondary)
                     }
                 }
             }
@@ -259,7 +225,7 @@ struct CustomerListRow: View {
                 .buttonStyle(PlainButtonStyle())
             }
         }
-        .rtlVerticalPadding(8)
+        .padding(.vertical, 8)
     }
 }
 
