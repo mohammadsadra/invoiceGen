@@ -122,6 +122,7 @@ struct CustomerListView: View {
             CustomerEditView { newCustomer in
                 customerManager.saveCustomer(newCustomer)
             }
+            .environment(\.layoutDirection, .rightToLeft)
         }
         .sheet(isPresented: $showingEditCustomer) {
             if let customerToEdit = selectedCustomerForEdit {
@@ -129,6 +130,7 @@ struct CustomerListView: View {
                     customerManager.saveCustomer(updatedCustomer)
                     selectedCustomerForEdit = nil
                 }
+                .environment(\.layoutDirection, .rightToLeft)
             }
         }
         .alert("حذف مشتری", isPresented: $showingDeleteAlert) {
@@ -144,6 +146,7 @@ struct CustomerListView: View {
         } message: {
             Text("آیا از حذف این مشتری اطمینان دارید؟")
         }
+        .environment(\.layoutDirection, .rightToLeft)
     }
 }
 

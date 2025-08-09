@@ -162,7 +162,7 @@ class PDFGenerator {
                     drawRect(CGRect(x: infoBoxX, y: yPosition, width: infoBoxWidth, height: infoBoxHeight),
                             fillColor: PDFColors.surface, strokeColor: PDFColors.border)
                     
-                    drawText("پیش فاکتور فروش کالا و خدمات", font: boldBodyFont,
+                    drawText("پیش فاکتور", font: boldBodyFont,
                             rect: CGRect(x: infoBoxX + 10, y: yPosition + 10, width: infoBoxWidth - 20, height: 20))
                     
                     drawText("تاریخ: \(PersianDateFormatter.shared.string(from: invoice.date))", font: bodyFont,
@@ -185,7 +185,7 @@ class PDFGenerator {
                     
                     // Build seller info with conditional fields
                     var sellerInfoParts: [String] = []
-                    sellerInfoParts.append("نام فرکت یا مجموعه: \(companyInfoManager.companyInfo.name)")
+                    sellerInfoParts.append("نام شرکت: \(companyInfoManager.companyInfo.name)")
                     
                     if isNotEmpty(companyInfoManager.companyInfo.phone) {
                         sellerInfoParts.append("تلفن: \(companyInfoManager.companyInfo.phone)")

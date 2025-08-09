@@ -49,9 +49,11 @@ struct InvoiceDetailView: View {
                     invoice = updatedInvoice
                     storageManager.saveInvoice(updatedInvoice)
                 }
+                .environment(\.layoutDirection, .rightToLeft)
             }
             .sheet(isPresented: $showingPreview) {
                 InvoicePreviewView(invoice: invoice)
+                    .environment(\.layoutDirection, .rightToLeft)
             }
             .alert("حذف فاکتور", isPresented: $showingDeleteAlert) {
                 Button("حذف", role: .destructive) {
@@ -89,6 +91,7 @@ struct InvoiceDetailView: View {
                 .animation(.easeInOut(duration: 0.3), value: showSnackbar)
             )
         }
+        .environment(\.layoutDirection, .rightToLeft)
     }
     
     // MARK: - Subviews

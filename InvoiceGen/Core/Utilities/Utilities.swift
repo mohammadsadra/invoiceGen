@@ -93,18 +93,3 @@ struct PersianNumberFormatter {
         return "\(formattedAmount) \(currency.displayName)"
     }
 }
-
-// MARK: - RTL Layout Modifier
-struct RTLModifier: ViewModifier {
-    func body(content: Content) -> some View {
-        content
-            .environment(\.layoutDirection, .rightToLeft)
-            .flipsForRightToLeftLayoutDirection(true)
-    }
-}
-
-extension View {
-    func rtlLayout() -> some View {
-        self.modifier(RTLModifier())
-    }
-}

@@ -153,9 +153,11 @@ struct SavedInvoicesView: View {
             }
             .sheet(isPresented: $showingNewInvoice) {
                 InvoiceFormView()
+                    .environment(\.layoutDirection, .rightToLeft)
             }
             .sheet(item: $selectedInvoice) { invoice in
                 InvoiceDetailView(invoice: invoice)
+                    .environment(\.layoutDirection, .rightToLeft)
             }
         }
         .environment(\.layoutDirection, .rightToLeft)

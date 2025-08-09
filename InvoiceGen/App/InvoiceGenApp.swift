@@ -16,6 +16,8 @@ struct InvoiceGenApp: App {
     var body: some Scene {
         WindowGroup {
             LaunchScreenView()
+                .environment(\.layoutDirection, .rightToLeft)
+                .environment(\.locale, Locale(identifier: "fa_IR"))
         }
     }
 }

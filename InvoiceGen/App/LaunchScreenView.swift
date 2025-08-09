@@ -47,9 +47,7 @@ struct LaunchScreenView: View {
             .environment(\.layoutDirection, .rightToLeft)
             .onAppear {
                 isAnimating = true
-                
-                // Show main app after 2 seconds
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
                     withAnimation(.easeInOut(duration: 0.5)) {
                         showMainApp = true
                     }

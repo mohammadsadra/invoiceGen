@@ -79,15 +79,19 @@ struct CompanySettingsView: View {
             }
             .sheet(isPresented: $showingLogoPhotoPicker) {
                 PhotoPicker(selectedImage: $selectedImage)
+                    .environment(\.layoutDirection, .rightToLeft)
             }
             .sheet(isPresented: $showingLogoCamera) {
                 ImagePicker(selectedImage: $selectedImage, sourceType: .camera)
+                    .environment(\.layoutDirection, .rightToLeft)
             }
             .sheet(isPresented: $showingSignaturePhotoPicker) {
                 PhotoPicker(selectedImage: $selectedImage)
+                    .environment(\.layoutDirection, .rightToLeft)
             }
             .sheet(isPresented: $showingSignatureCamera) {
                 ImagePicker(selectedImage: $selectedImage, sourceType: .camera)
+                    .environment(\.layoutDirection, .rightToLeft)
             }
             .sheet(isPresented: $showingSignatureDrawing) {
                 SimpleSignatureView { signature in
@@ -95,6 +99,7 @@ struct CompanySettingsView: View {
                     imageManager.saveSignature(resizedSignature)
                     showSnackbar(message: "امضا ذخیره شد")
                 }
+                .environment(\.layoutDirection, .rightToLeft)
             }
             .onChange(of: selectedImage) { image in
                 handleSelectedImage(image)
@@ -125,6 +130,7 @@ struct CompanySettingsView: View {
             }
         }
         .overlay(snackbarOverlay)
+        .environment(\.layoutDirection, .rightToLeft)
     }
     
     // MARK: - Subviews

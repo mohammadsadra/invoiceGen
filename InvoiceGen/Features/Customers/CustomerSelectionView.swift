@@ -133,6 +133,7 @@ struct CustomerSelectionView: View {
                 onCustomerSelected(newCustomer)
                 dismiss()
             }
+            .environment(\.layoutDirection, .rightToLeft)
         }
         .sheet(isPresented: $showingEditCustomer) {
             if let customerToEdit = selectedCustomerForEdit {
@@ -140,6 +141,7 @@ struct CustomerSelectionView: View {
                     // Customer is automatically updated in the manager
                     selectedCustomerForEdit = nil
                 }
+                .environment(\.layoutDirection, .rightToLeft)
             }
         }
     }
