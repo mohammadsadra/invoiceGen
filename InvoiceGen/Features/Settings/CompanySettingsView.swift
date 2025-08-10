@@ -36,355 +36,228 @@ struct CompanySettingsView: View {
     }
     
     var body: some View {
-        NavigationView {
-            Form {
-                companyInfoSection
-                logoSection
-                signatureSection
-                helpSection
+        List {
+            // Company Information Section
+            Section {
+                CompanyTextFieldRow(
+                    icon: "building.2",
+                    iconColor: .blue,
+                    title: "نام شرکت",
+                    text: $companyInfoManager.companyInfo.name,
+                    placeholder: "نام شرکت خود را وارد کنید"
+                )
+                
+                CompanyTextFieldRow(
+                    icon: "location",
+                    iconColor: .green,
+                    title: "آدرس",
+                    text: $companyInfoManager.companyInfo.address,
+                    placeholder: "آدرس شرکت را وارد کنید"
+                )
+                
+                CompanyTextFieldRow(
+                    icon: "building",
+                    iconColor: .orange,
+                    title: "شهر",
+                    text: $companyInfoManager.companyInfo.city,
+                    placeholder: "شهر را وارد کنید"
+                )
+                
+                CompanyTextFieldRow(
+                    icon: "phone",
+                    iconColor: .purple,
+                    title: "تلفن",
+                    text: $companyInfoManager.companyInfo.phone,
+                    placeholder: "شماره تلفن را وارد کنید"
+                )
+                
+                CompanyTextFieldRow(
+                    icon: "envelope",
+                    iconColor: .red,
+                    title: "ایمیل",
+                    text: $companyInfoManager.companyInfo.email,
+                    placeholder: "آدرس ایمیل را وارد کنید"
+                )
+                
+                CompanyTextFieldRow(
+                    icon: "globe",
+                    iconColor: .indigo,
+                    title: "وب‌سایت",
+                    text: $companyInfoManager.companyInfo.website,
+                    placeholder: "آدرس وب‌سایت را وارد کنید"
+                )
+            } header: {
+                Text("اطلاعات شرکت")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.primary)
             }
-            .navigationTitle("تنظیمات شرکت")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("ذخیره") {
-                        companyInfoManager.saveCompanyInfo(companyInfoManager.companyInfo)
-                        showSnackbar(message: "تنظیمات ذخیره شد")
-                        dismiss()
+            
+            // Logo Section
+            Section {
+                CompanyActionRow(
+                    icon: "photo",
+                    iconColor: .blue,
+                    title: "لوگوی شرکت",
+                    subtitle: imageManager.companyLogo != nil ? "لوگو تنظیم شده" : "لوگو تنظیم نشده"
+                ) {
+                    showingLogoActionSheet = true
+                }
+                
+                if imageManager.companyLogo != nil {
+                    CompanyActionRow(
+                        icon: "trash",
+                        iconColor: .red,
+                        title: "حذف لوگو",
+                        subtitle: "لوگوی فعلی را حذف کنید"
+                    ) {
+                        imageManager.deleteCompanyLogo()
+                        showSnackbar(message: "لوگو حذف شد")
                     }
-                    .font(.vazirmatenBody)
+                }
+            } header: {
+                Text("لوگو")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.primary)
+            }
+            
+            // Signature Section
+            Section {
+                CompanyActionRow(
+                    icon: "pencil.and.outline",
+                    iconColor: .green,
+                    title: "امضای شرکت",
+                    subtitle: imageManager.signature != nil ? "امضا تنظیم شده" : "امضا تنظیم نشده"
+                ) {
+                    showingSignatureActionSheet = true
+                }
+                
+                if imageManager.signature != nil {
+                    CompanyActionRow(
+                        icon: "trash",
+                        iconColor: .red,
+                        title: "حذف امضا",
+                        subtitle: "امضای فعلی را حذف کنید"
+                    ) {
+                        imageManager.deleteSignature()
+                        showSnackbar(message: "امضا حذف شد")
+                    }
+                }
+            } header: {
+                Text("امضا")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.primary)
+            }
+        }
+        .navigationTitle("تنظیمات شرکت")
+        .navigationBarTitleDisplayMode(.large)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    dismiss()
+                }) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 16, weight: .medium))
+                        Text("بازگشت")
+                            .font(.system(size: 16, weight: .medium))
+                    }
                 }
             }
-            .confirmationDialog("انتخاب لوگو", isPresented: $showingLogoActionSheet) {
-                Button("گالری تصاویر") {
-                    imageType = .logo
-                    showingLogoPhotoPicker = true
+            
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button("ذخیره") {
+                    companyInfoManager.saveCompanyInfo(companyInfoManager.companyInfo)
+                    showSnackbar(message: "تنظیمات ذخیره شد")
+                    dismiss()
                 }
-                Button("دوربین") {
-                    imageType = .logo
-                    showingLogoCamera = true
-                }
-                Button("انصراف", role: .cancel) { }
+                .font(.system(size: 16, weight: .medium))
             }
-            .confirmationDialog("انتخاب امضا", isPresented: $showingSignatureActionSheet) {
-                Button("گالری تصاویر") {
-                    imageType = .signature
-                    showingSignaturePhotoPicker = true
-                }
-                Button("دوربین") {
-                    imageType = .signature
-                    showingSignatureCamera = true
-                }
-                Button("انصراف", role: .cancel) { }
+        }
+        .environment(\.layoutDirection, .rightToLeft)
+        .environment(\.locale, Locale(identifier: "fa_IR"))
+        .confirmationDialog("انتخاب لوگو", isPresented: $showingLogoActionSheet) {
+            Button("گالری تصاویر") {
+                imageType = .logo
+                showingLogoPhotoPicker = true
             }
-            .sheet(isPresented: $showingLogoPhotoPicker) {
-                PhotoPicker(selectedImage: $selectedImage)
-                    .environment(\.layoutDirection, .rightToLeft)
+            Button("دوربین") {
+                imageType = .logo
+                showingLogoCamera = true
             }
-            .sheet(isPresented: $showingLogoCamera) {
-                ImagePicker(selectedImage: $selectedImage, sourceType: .camera)
-                    .environment(\.layoutDirection, .rightToLeft)
+            Button("انصراف", role: .cancel) { }
+        }
+        .confirmationDialog("انتخاب امضا", isPresented: $showingSignatureActionSheet) {
+            Button("گالری تصاویر") {
+                imageType = .signature
+                showingSignaturePhotoPicker = true
             }
-            .sheet(isPresented: $showingSignaturePhotoPicker) {
-                PhotoPicker(selectedImage: $selectedImage)
-                    .environment(\.layoutDirection, .rightToLeft)
+            Button("دوربین") {
+                imageType = .signature
+                showingSignatureCamera = true
             }
-            .sheet(isPresented: $showingSignatureCamera) {
-                ImagePicker(selectedImage: $selectedImage, sourceType: .camera)
-                    .environment(\.layoutDirection, .rightToLeft)
-            }
-            .sheet(isPresented: $showingSignatureDrawing) {
-                SimpleSignatureView { signature in
-                    let resizedSignature = imageManager.resizeImage(signature, maxWidth: 300, maxHeight: 100)
-                    imageManager.saveSignature(resizedSignature)
-                    showSnackbar(message: "امضا ذخیره شد")
-                }
+            Button("انصراف", role: .cancel) { }
+        }
+        .sheet(isPresented: $showingLogoPhotoPicker) {
+            PhotoPicker(selectedImage: $selectedImage)
                 .environment(\.layoutDirection, .rightToLeft)
+                .environment(\.locale, Locale(identifier: "fa_IR"))
+        }
+        .sheet(isPresented: $showingLogoCamera) {
+            ImagePicker(selectedImage: $selectedImage, sourceType: .camera)
+                .environment(\.layoutDirection, .rightToLeft)
+                .environment(\.locale, Locale(identifier: "fa_IR"))
+        }
+        .sheet(isPresented: $showingSignaturePhotoPicker) {
+            PhotoPicker(selectedImage: $selectedImage)
+                .environment(\.layoutDirection, .rightToLeft)
+                .environment(\.locale, Locale(identifier: "fa_IR"))
+        }
+        .sheet(isPresented: $showingSignatureCamera) {
+            ImagePicker(selectedImage: $selectedImage, sourceType: .camera)
+                .environment(\.layoutDirection, .rightToLeft)
+                .environment(\.locale, Locale(identifier: "fa_IR"))
+        }
+        .sheet(isPresented: $showingSignatureDrawing) {
+            SimpleSignatureView { signature in
+                let resizedSignature = imageManager.resizeImage(signature, maxWidth: 300, maxHeight: 100)
+                imageManager.saveSignature(resizedSignature)
+                showSnackbar(message: "امضا ذخیره شد")
             }
-            .onChange(of: selectedImage) { image in
-                handleSelectedImage(image)
+            .environment(\.layoutDirection, .rightToLeft)
+            .environment(\.locale, Locale(identifier: "fa_IR"))
+        }
+        .sheet(isPresented: $showingSimpleSignature) {
+            SimpleSignatureView { signature in
+                let resizedSignature = imageManager.resizeImage(signature, maxWidth: 300, maxHeight: 100)
+                imageManager.saveSignature(resizedSignature)
+                showSnackbar(message: "امضا ذخیره شد")
             }
-            .onChange(of: companyInfoManager.companyInfo.name) { _ in
-                companyInfoManager.saveCompanyInfo(companyInfoManager.companyInfo)
-                showSnackbar(message: "اطلاعات شرکت ذخیره شد")
-            }
-            .onChange(of: companyInfoManager.companyInfo.address) { _ in
-                companyInfoManager.saveCompanyInfo(companyInfoManager.companyInfo)
-                showSnackbar(message: "اطلاعات شرکت ذخیره شد")
-            }
-            .onChange(of: companyInfoManager.companyInfo.city) { _ in
-                companyInfoManager.saveCompanyInfo(companyInfoManager.companyInfo)
-                showSnackbar(message: "اطلاعات شرکت ذخیره شد")
-            }
-            .onChange(of: companyInfoManager.companyInfo.phone) { _ in
-                companyInfoManager.saveCompanyInfo(companyInfoManager.companyInfo)
-                showSnackbar(message: "اطلاعات شرکت ذخیره شد")
-            }
-            .onChange(of: companyInfoManager.companyInfo.email) { _ in
-                companyInfoManager.saveCompanyInfo(companyInfoManager.companyInfo)
-                showSnackbar(message: "اطلاعات شرکت ذخیره شد")
-            }
-            .onChange(of: companyInfoManager.companyInfo.website) { _ in
-                companyInfoManager.saveCompanyInfo(companyInfoManager.companyInfo)
-                showSnackbar(message: "اطلاعات شرکت ذخیره شد")
-            }
+            .environment(\.layoutDirection, .rightToLeft)
+            .environment(\.locale, Locale(identifier: "fa_IR"))
+        }
+        .onChange(of: selectedImage) { image in
+            handleSelectedImage(image)
+        }
+        .onChange(of: companyInfoManager.companyInfo.name) { _ in
+            companyInfoManager.saveCompanyInfo(companyInfoManager.companyInfo)
+        }
+        .onChange(of: companyInfoManager.companyInfo.address) { _ in
+            companyInfoManager.saveCompanyInfo(companyInfoManager.companyInfo)
+        }
+        .onChange(of: companyInfoManager.companyInfo.city) { _ in
+            companyInfoManager.saveCompanyInfo(companyInfoManager.companyInfo)
+        }
+        .onChange(of: companyInfoManager.companyInfo.phone) { _ in
+            companyInfoManager.saveCompanyInfo(companyInfoManager.companyInfo)
+        }
+        .onChange(of: companyInfoManager.companyInfo.email) { _ in
+            companyInfoManager.saveCompanyInfo(companyInfoManager.companyInfo)
+        }
+        .onChange(of: companyInfoManager.companyInfo.website) { _ in
+            companyInfoManager.saveCompanyInfo(companyInfoManager.companyInfo)
         }
         .overlay(snackbarOverlay)
-        .environment(\.layoutDirection, .rightToLeft)
-    }
-    
-    // MARK: - Subviews
-    
-    private var companyInfoSection: some View {
-        Section("اطلاعات شرکت") {
-            VStack(spacing: 16) {
-                TextField("نام شرکت", text: $companyInfoManager.companyInfo.name)
-                    .font(.vazirmatenBody)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                
-                TextField("آدرس", text: $companyInfoManager.companyInfo.address)
-                    .font(.vazirmatenBody)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                
-                TextField("شهر", text: $companyInfoManager.companyInfo.city)
-                    .font(.vazirmatenBody)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                
-                TextField("تلفن", text: $companyInfoManager.companyInfo.phone)
-                    .font(.vazirmatenBody)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .keyboardType(.phonePad)
-                
-                TextField("ایمیل", text: $companyInfoManager.companyInfo.email)
-                    .font(.vazirmatenBody)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .keyboardType(.emailAddress)
-                
-                TextField("وب‌سایت", text: $companyInfoManager.companyInfo.website)
-                    .font(.vazirmatenBody)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .keyboardType(.URL)
-                
-                Button("بازنشانی به پیش‌فرض") {
-                    companyInfoManager.resetToDefaults()
-                }
-                .font(.vazirmatenCaption)
-                .foregroundColor(.red)
-            }
-        }
-    }
-    
-    private var logoSection: some View {
-        Section("لوگوی شرکت") {
-            VStack(spacing: 16) {
-                logoDisplayView
-                logoActionButtons
-            }
-        }
-    }
-    
-    private var logoDisplayView: some View {
-        Group {
-            if let logo = imageManager.companyLogo {
-                Image(uiImage: logo)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(maxHeight: 120)
-                    .background(Color.gray.opacity(0.1))
-                    .cornerRadius(10)
-            } else {
-                VStack {
-                    Image(systemName: "photo")
-                        .font(.system(size: 40))
-                        .foregroundColor(.gray)
-                    Text("لوگوی شرکت آپلود نشده")
-                        .font(.vazirmatenCaption)
-                        .foregroundColor(.secondary)
-                }
-                .frame(height: 120)
-                .frame(maxWidth: .infinity)
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(10)
-            }
-        }
-    }
-    
-    private var logoActionButtons: some View {
-        HStack(spacing: 12) {
-            Button(action: {
-                imageType = .logo
-                showingLogoActionSheet = true
-            }) {
-                HStack {
-                    Image(systemName: "photo.fill")
-                        .font(.title2)
-                    Text("آپلود لوگو")
-                        .font(.vazirmatenBody)
-                }
-                .foregroundColor(.white)
-            }
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(Color.blue)
-            .cornerRadius(10)
-            
-            if imageManager.companyLogo != nil {
-                Button(action: {
-                    imageManager.deleteCompanyLogo()
-                    showSnackbar(message: "لوگو حذف شد")
-                }) {
-                    HStack {
-                        Image(systemName: "trash.circle.fill")
-                            .font(.title2)
-                        Text("حذف")
-                            .font(.vazirmatenBody)
-                    }
-                    .foregroundColor(.white)
-                }
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(Color.red)
-                .cornerRadius(10)
-            }
-        }
-    }
-    
-    private var signatureSection: some View {
-        Section("امضا") {
-            VStack(spacing: 16) {
-                signatureDisplayView
-                signatureActionButtons
-            }
-        }
-    }
-    
-    private var signatureDisplayView: some View {
-        Group {
-            if let signature = imageManager.signature {
-                Image(uiImage: signature)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(maxHeight: 100)
-                    .background(Color.gray.opacity(0.1))
-                    .cornerRadius(10)
-            } else {
-                VStack {
-                    Image(systemName: "signature")
-                        .font(.system(size: 40))
-                        .foregroundColor(.gray)
-                    Text("امضا آپلود نشده")
-                        .font(.vazirmatenCaption)
-                        .foregroundColor(.secondary)
-                }
-                .frame(height: 100)
-                .frame(maxWidth: .infinity)
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(10)
-            }
-        }
-    }
-    
-    private var signatureActionButtons: some View {
-        VStack(spacing: 12) {
-            Button(action: {
-                showingSignatureDrawing = true
-            }) {
-                HStack {
-                    Image(systemName: "pencil.circle.fill")
-                        .font(.title2)
-                    Text("رسم امضا")
-                        .font(.vazirmatenBody)
-                }
-                .foregroundColor(.white)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 12)
-            .padding(.horizontal, 16)
-            .background(Color.green)
-            .cornerRadius(10)
-            
-            Button(action: {
-                showingSimpleSignature = true
-            }) {
-                HStack {
-                    Image(systemName: "signature")
-                        .font(.title2)
-                    Text("امضای ساده")
-                        .font(.vazirmatenBody)
-                }
-                .foregroundColor(.white)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 12)
-            .padding(.horizontal, 16)
-            .background(Color.orange)
-            .cornerRadius(10)
-            
-            if imageManager.signature != nil {
-                Button(action: {
-                    imageManager.deleteSignature()
-                    showSnackbar(message: "امضا حذف شد")
-                }) {
-                    HStack {
-                        Image(systemName: "trash.circle.fill")
-                            .font(.title2)
-                        Text("حذف امضا")
-                            .font(.vazirmatenBody)
-                    }
-                    .foregroundColor(.white)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
-                .padding(.horizontal, 16)
-                .background(Color.red)
-                .cornerRadius(10)
-            }
-        }
-    }
-    
-    private var helpSection: some View {
-        Section("راهنما") {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("• لوگوی شرکت در بالای فاکتور نمایش داده می‌شود")
-                    .font(.vazirmatenCaption)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.leading)
-                
-                Text("• امضا در پایین فاکتور قرار می‌گیرد")
-                    .font(.vazirmatenCaption)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.leading)
-                
-                Text("• تصاویر به صورت خودکار تغییر اندازه می‌یابند")
-                    .font(.vazirmatenCaption)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.leading)
-            }
-            .padding()
-        }
-    }
-    
-    private var snackbarOverlay: some View {
-        VStack {
-            Spacer()
-            if showSnackbar {
-                HStack {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.white)
-                    Text(snackbarMessage)
-                        .font(.vazirmatenBody)
-                        .foregroundColor(.white)
-                    Spacer()
-                }
-                .padding()
-                .background(Color.green)
-                .cornerRadius(10)
-                .padding(.horizontal)
-                .padding(.bottom, 50)
-                .transition(.move(edge: .bottom).combined(with: .opacity))
-            }
-        }
-        .animation(.easeInOut(duration: 0.3), value: showSnackbar)
     }
     
     // MARK: - Helper Functions
@@ -418,6 +291,29 @@ struct CompanySettingsView: View {
                 showSnackbar = false
             }
         }
+    }
+    
+    private var snackbarOverlay: some View {
+        VStack {
+            Spacer()
+            if showSnackbar {
+                HStack {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.white)
+                    Text(snackbarMessage)
+                        .font(.system(size: 16))
+                        .foregroundColor(.white)
+                    Spacer()
+                }
+                .padding()
+                .background(Color.green)
+                .cornerRadius(10)
+                .padding(.horizontal)
+                .padding(.bottom, 50)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
+        .animation(.easeInOut(duration: 0.3), value: showSnackbar)
     }
 }
 

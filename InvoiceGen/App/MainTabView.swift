@@ -31,9 +31,9 @@ struct MainTabView: View {
                         .font(.vazirmatenCaption)
                 }
             
-            CompanySettingsView()
+            SettingsView()
                 .tabItem {
-                    Image(systemName: "building.2")
+                    Image(systemName: "gear")
                     Text("تنظیمات")
                         .font(.vazirmatenCaption)
                 }

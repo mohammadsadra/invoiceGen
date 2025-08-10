@@ -8,12 +8,12 @@
 import Foundation
 
 struct CompanyInformation: Codable {
-    var name: String = "شرکت شما"
-    var address: String = "آدرس شرکت"
-    var city: String = "شهر، کشور"
-    var phone: String = "تلفن: ۰۹۱۲۳۴۵۶۷۸۹"
-    var email: String = "info@company.com"
-    var website: String = "www.company.com"
+    var name: String = ""
+    var address: String = ""
+    var city: String = ""
+    var phone: String = ""
+    var email: String = ""
+    var website: String = ""
 }
 
 class CompanyInfoManager: ObservableObject {
