@@ -60,6 +60,22 @@ struct SettingsView: View {
                         .font(.system(size: 16, weight: .semibold))
                         .foregroundColor(.primary)
                 }
+                
+                // Social Media Section
+                Section {
+                    SettingsRowView(
+                        icon: "camera",
+                        iconColor: .purple,
+                        title: "اینستاگرام",
+                        subtitle: "@novastore_ir"
+                    ) {
+                        openInstagram()
+                    }
+                } header: {
+                    Text("شبکه‌های اجتماعی")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.primary)
+                }
             }
             .navigationTitle("تنظیمات")
             .navigationBarTitleDisplayMode(.large)
@@ -68,6 +84,17 @@ struct SettingsView: View {
         }
         .environment(\.layoutDirection, .rightToLeft)
         .environment(\.locale, Locale(identifier: "fa_IR"))
+    }
+    
+    private func openInstagram() {
+        let instagramURL = "instagram://user?username=novastore_ir"
+        let webURL = "https://www.instagram.com/novastore_ir"
+        
+        if let url = URL(string: instagramURL), UIApplication.shared.canOpenURL(url) {
+            UIApplication.shared.open(url)
+        } else if let url = URL(string: webURL) {
+            UIApplication.shared.open(url)
+        }
     }
 }
 
