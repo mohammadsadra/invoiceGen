@@ -379,11 +379,13 @@ class PDFGenerator {
                         drawRect(CGRect(x: margin, y: yPosition, width: pageSize.width - 2*margin, height: accountCardHeight),
                                fillColor: ModernPDFColors.success.withAlphaComponent(0.1), strokeColor: ModernPDFColors.success, lineWidth: 1, cornerRadius: 8)
                         
+                        // Title on the right
                         drawRTLText("شماره حساب یا شماره کارت:", font: ModernFonts.bodyBold, color: ModernPDFColors.primary, alignment: .right,
-                                  rect: CGRect(x: margin + 10, y: yPosition + 5, width: 150, height: 16))
+                                  rect: CGRect(x: pageSize.width - margin - 200, y: yPosition + 5, width: 190, height: 16))
                         
-                        drawRTLText(invoice.accountNumber, font: ModernFonts.bodyBold, color: ModernPDFColors.success, alignment: .right,
-                                  rect: CGRect(x: margin + 170, y: yPosition + 5, width: pageSize.width - 2*margin - 180, height: 16))
+                        // Number on the left
+                        drawRTLText(invoice.accountNumber, font: ModernFonts.bodyBold, color: ModernPDFColors.success, alignment: .left,
+                                  rect: CGRect(x: margin + 10, y: yPosition + 5, width: pageSize.width - 2*margin - 220, height: 16))
                         
                         yPosition += accountCardHeight + 15
                     }
