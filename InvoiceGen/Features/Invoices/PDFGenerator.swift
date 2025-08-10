@@ -27,15 +27,15 @@ class PDFGenerator {
     
     // MARK: - Modern Font Definitions
     private struct ModernFonts {
-        static let title = UIFont.boldSystemFont(ofSize: 32)
-        static let header = UIFont.boldSystemFont(ofSize: 20)
-        static let subHeader = UIFont.boldSystemFont(ofSize: 16)
-        static let body = UIFont.systemFont(ofSize: 14)
-        static let bodyBold = UIFont.boldSystemFont(ofSize: 14)
-        static let caption = UIFont.systemFont(ofSize: 12)
-        static let captionBold = UIFont.boldSystemFont(ofSize: 12)
-        static let small = UIFont.systemFont(ofSize: 10)
-        static let total = UIFont.boldSystemFont(ofSize: 16)
+        static let title = UIFont.boldSystemFont(ofSize: 28)
+        static let header = UIFont.boldSystemFont(ofSize: 18)
+        static let subHeader = UIFont.boldSystemFont(ofSize: 14)
+        static let body = UIFont.systemFont(ofSize: 12)
+        static let bodyBold = UIFont.boldSystemFont(ofSize: 12)
+        static let caption = UIFont.systemFont(ofSize: 10)
+        static let captionBold = UIFont.boldSystemFont(ofSize: 10)
+        static let small = UIFont.systemFont(ofSize: 9)
+        static let total = UIFont.boldSystemFont(ofSize: 14)
     }
     
     static func generateInvoicePDF(invoice: Invoice) async -> Data {
@@ -50,8 +50,8 @@ class PDFGenerator {
                 let data = renderer.pdfData { context in
                     context.beginPage()
                     
-                    let margin: CGFloat = 40
-                    var yPosition: CGFloat = 30
+                    let margin: CGFloat = 30
+                    var yPosition: CGFloat = 20
                     
                     // MARK: - RTL Helper Functions
                     
@@ -64,7 +64,7 @@ class PDFGenerator {
                         paragraphStyle.alignment = alignment
                         paragraphStyle.baseWritingDirection = .rightToLeft
                         paragraphStyle.lineBreakMode = .byWordWrapping
-                        paragraphStyle.lineSpacing = 2
+                        paragraphStyle.lineSpacing = 1
                         
                         let attributes: [NSAttributedString.Key: Any] = [
                             .font: font,
@@ -81,7 +81,7 @@ class PDFGenerator {
                         paragraphStyle.alignment = .center
                         paragraphStyle.baseWritingDirection = .rightToLeft
                         paragraphStyle.lineBreakMode = .byWordWrapping
-                        paragraphStyle.lineSpacing = 2
+                        paragraphStyle.lineSpacing = 1
                         
                         let attributes: [NSAttributedString.Key: Any] = [
                             .font: font,
@@ -97,7 +97,7 @@ class PDFGenerator {
                         image.draw(in: rect)
                     }
                     
-                    func drawRect(_ rect: CGRect, fillColor: UIColor? = nil, strokeColor: UIColor = ModernPDFColors.border, lineWidth: CGFloat = 1, cornerRadius: CGFloat = 8) {
+                    func drawRect(_ rect: CGRect, fillColor: UIColor? = nil, strokeColor: UIColor = ModernPDFColors.border, lineWidth: CGFloat = 1, cornerRadius: CGFloat = 6) {
                         let path = UIBezierPath(roundedRect: rect, cornerRadius: cornerRadius)
                         
                         if let fillColor = fillColor {
@@ -121,7 +121,7 @@ class PDFGenerator {
                     
                     // MARK: - Header Section (Title on the right)
                     
-                    let headerHeight: CGFloat = 80
+                    let headerHeight: CGFloat = 60
                     let headerY = yPosition
                     
                     // Title on the right side
@@ -129,52 +129,52 @@ class PDFGenerator {
                     let titleRect = CGRect(x: margin, y: headerY, width: pageSize.width - 2*margin, height: headerHeight)
                     drawRTLText(titleText, font: ModernFonts.title, color: ModernPDFColors.primary, alignment: .right, rect: titleRect)
                     
-                    yPosition += headerHeight + 20
+                    yPosition += headerHeight + 10
                     
                     // MARK: - Invoice Info Section (Right-aligned)
                     
-                    let infoCardWidth: CGFloat = 250
-                    let infoCardHeight: CGFloat = 80
+                    let infoCardWidth: CGFloat = 200
+                    let infoCardHeight: CGFloat = 60
                     let infoCardX = pageSize.width - margin - infoCardWidth
                     
                     drawRect(CGRect(x: infoCardX, y: yPosition, width: infoCardWidth, height: infoCardHeight),
-                           fillColor: ModernPDFColors.surface, strokeColor: ModernPDFColors.border, lineWidth: 1, cornerRadius: 12)
+                           fillColor: ModernPDFColors.surface, strokeColor: ModernPDFColors.border, lineWidth: 1, cornerRadius: 8)
                     
                     drawRTLText("تاریخ: \(PersianDateFormatter.shared.string(from: invoice.date))", font: ModernFonts.body,
-                              rect: CGRect(x: infoCardX + 15, y: yPosition + 15, width: infoCardWidth - 30, height: 20))
+                              rect: CGRect(x: infoCardX + 10, y: yPosition + 10, width: infoCardWidth - 20, height: 18))
                     
                     drawRTLText("شماره فاکتور: \(invoice.invoiceNumber)", font: ModernFonts.body,
-                              rect: CGRect(x: infoCardX + 15, y: yPosition + 40, width: infoCardWidth - 30, height: 20))
+                              rect: CGRect(x: infoCardX + 10, y: yPosition + 30, width: infoCardWidth - 20, height: 18))
                     
-                    yPosition += infoCardHeight + 25
+                    yPosition += infoCardHeight + 15
                     
                     // MARK: - Company Information Section (with conditional logo)
                     
                     drawRTLText("مشخصات فروشنده:", font: ModernFonts.subHeader, color: ModernPDFColors.primary, alignment: .right,
-                              rect: CGRect(x: margin, y: yPosition, width: pageSize.width - 2*margin, height: 25))
-                    yPosition += 30
+                              rect: CGRect(x: margin, y: yPosition, width: pageSize.width - 2*margin, height: 20))
+                    yPosition += 20
                     
                     // Check if company logo exists
                     let hasLogo = imageManager.companyLogo != nil
-                    let logoSize: CGFloat = hasLogo ? 60 : 0
-                    let logoSpacing: CGFloat = hasLogo ? 20 : 0
+                    let logoSize: CGFloat = hasLogo ? 50 : 0
+                    let logoSpacing: CGFloat = hasLogo ? 15 : 0
                     
-                    let companyCardHeight: CGFloat = 100
+                    let companyCardHeight: CGFloat = 80
                     let companyCardWidth = pageSize.width - 2*margin
                     drawRect(CGRect(x: margin, y: yPosition, width: companyCardWidth, height: companyCardHeight),
-                           fillColor: ModernPDFColors.surface, strokeColor: ModernPDFColors.border, lineWidth: 1, cornerRadius: 12)
+                           fillColor: ModernPDFColors.surface, strokeColor: ModernPDFColors.border, lineWidth: 1, cornerRadius: 8)
                     
                     // Company logo (right side if exists)
                     if let logo = imageManager.companyLogo {
-                        let logoX = pageSize.width - margin - logoSize - 15
-                        let logoY = yPosition + 20
+                        let logoX = pageSize.width - margin - logoSize - 10
+                        let logoY = yPosition + 15
                         let logoRect = CGRect(x: logoX, y: logoY, width: logoSize, height: logoSize)
                         drawImage(logo, in: logoRect)
                     }
                     
                     // Company info (left side of logo, or full width if no logo)
-                    let infoStartX = margin + 15
-                    let infoWidth = hasLogo ? (companyCardWidth - logoSize - logoSpacing - 30) : (companyCardWidth - 30)
+                    let infoStartX = margin + 10
+                    let infoWidth = hasLogo ? (companyCardWidth - logoSize - logoSpacing - 20) : (companyCardWidth - 20)
                     
                     // Build company info with conditional fields
                     var companyInfoParts: [String] = []
@@ -194,7 +194,7 @@ class PDFGenerator {
                     
                     let companyInfo = companyInfoParts.joined(separator: "    ")
                     drawRTLText(companyInfo, font: ModernFonts.body,
-                              rect: CGRect(x: infoStartX, y: yPosition + 15, width: infoWidth, height: 20))
+                              rect: CGRect(x: infoStartX, y: yPosition + 10, width: infoWidth, height: 18))
                     
                     // Build address info with conditional city
                     var addressInfoParts: [String] = []
@@ -206,19 +206,19 @@ class PDFGenerator {
                     
                     let addressInfo = addressInfoParts.joined(separator: "    ")
                     drawRTLText(addressInfo, font: ModernFonts.body,
-                              rect: CGRect(x: infoStartX, y: yPosition + 45, width: infoWidth, height: 20))
+                              rect: CGRect(x: infoStartX, y: yPosition + 35, width: infoWidth, height: 18))
                     
-                    yPosition += companyCardHeight + 20
+                    yPosition += companyCardHeight + 15
                     
                     // MARK: - Customer Information Section
                     
                     drawRTLText("مشخصات خریدار:", font: ModernFonts.subHeader, color: ModernPDFColors.primary, alignment: .right,
-                              rect: CGRect(x: margin, y: yPosition, width: pageSize.width - 2*margin, height: 25))
-                    yPosition += 30
+                              rect: CGRect(x: margin, y: yPosition, width: pageSize.width - 2*margin, height: 20))
+                    yPosition += 20
                     
-                    let customerCardHeight: CGFloat = 80
+                    let customerCardHeight: CGFloat = 70
                     drawRect(CGRect(x: margin, y: yPosition, width: pageSize.width - 2*margin, height: customerCardHeight),
-                           fillColor: ModernPDFColors.surface, strokeColor: ModernPDFColors.border, lineWidth: 1, cornerRadius: 12)
+                           fillColor: ModernPDFColors.surface, strokeColor: ModernPDFColors.border, lineWidth: 1, cornerRadius: 8)
                     
                     // Build customer info with conditional fields
                     var customerInfoParts: [String] = []
@@ -238,7 +238,7 @@ class PDFGenerator {
                     
                     let customerInfo = customerInfoParts.joined(separator: "    ")
                     drawRTLText(customerInfo, font: ModernFonts.body,
-                              rect: CGRect(x: margin + 15, y: yPosition + 15, width: pageSize.width - 2*margin - 30, height: 20))
+                              rect: CGRect(x: margin + 10, y: yPosition + 10, width: pageSize.width - 2*margin - 20, height: 18))
                     
                     // Build customer address with conditional city
                     var customerAddressParts: [String] = []
@@ -250,17 +250,17 @@ class PDFGenerator {
                     
                     let customerAddress = customerAddressParts.joined(separator: ", ")
                     drawRTLText(customerAddress, font: ModernFonts.body,
-                              rect: CGRect(x: margin + 15, y: yPosition + 45, width: pageSize.width - 2*margin - 30, height: 20))
+                              rect: CGRect(x: margin + 10, y: yPosition + 35, width: pageSize.width - 2*margin - 20, height: 18))
                     
-                    yPosition += customerCardHeight + 25
+                    yPosition += customerCardHeight + 15
                     
                     // MARK: - Items Table Section
                     
                     drawRTLText("مشخصات کالا یا خدمات:", font: ModernFonts.subHeader, color: ModernPDFColors.primary, alignment: .right,
-                              rect: CGRect(x: margin, y: yPosition, width: pageSize.width - 2*margin, height: 25))
-                    yPosition += 30
+                              rect: CGRect(x: margin, y: yPosition, width: pageSize.width - 2*margin, height: 20))
+                    yPosition += 20
                     
-                    let rowHeight: CGFloat = 35
+                    let rowHeight: CGFloat = 30
                     let availableWidth = pageSize.width - 2*margin
                     let colWidths: [CGFloat] = [
                         availableWidth * 0.55, // Description (55%)
@@ -271,23 +271,23 @@ class PDFGenerator {
                     
                     // Table header
                     let tableHeaderRect = CGRect(x: margin, y: yPosition, width: availableWidth, height: rowHeight)
-                    drawRect(tableHeaderRect, fillColor: ModernPDFColors.accent, strokeColor: ModernPDFColors.accent, lineWidth: 1, cornerRadius: 8)
+                    drawRect(tableHeaderRect, fillColor: ModernPDFColors.accent, strokeColor: ModernPDFColors.accent, lineWidth: 1, cornerRadius: 6)
                     
-                    var xPos = margin + 10
+                    var xPos = margin + 8
                     drawRTLText("شرح کالا یا خدمات", font: ModernFonts.bodyBold, color: ModernPDFColors.background, alignment: .right,
-                              rect: CGRect(x: xPos, y: yPosition + 10, width: colWidths[0] - 20, height: 15))
+                              rect: CGRect(x: xPos, y: yPosition + 8, width: colWidths[0] - 16, height: 14))
                     
                     xPos += colWidths[0]
                     drawRTLCenterText("تعداد", font: ModernFonts.bodyBold, color: ModernPDFColors.background,
-                                    rect: CGRect(x: xPos, y: yPosition + 10, width: colWidths[1] - 20, height: 15))
+                                    rect: CGRect(x: xPos, y: yPosition + 8, width: colWidths[1] - 16, height: 14))
                     
                     xPos += colWidths[1]
                     drawRTLCenterText("قیمت واحد", font: ModernFonts.bodyBold, color: ModernPDFColors.background,
-                                    rect: CGRect(x: xPos, y: yPosition + 10, width: colWidths[2] - 20, height: 15))
+                                    rect: CGRect(x: xPos, y: yPosition + 8, width: colWidths[2] - 16, height: 14))
                     
                     xPos += colWidths[2]
                     drawRTLCenterText("جمع", font: ModernFonts.bodyBold, color: ModernPDFColors.background,
-                                    rect: CGRect(x: xPos, y: yPosition + 10, width: colWidths[3] - 20, height: 15))
+                                    rect: CGRect(x: xPos, y: yPosition + 8, width: colWidths[3] - 16, height: 14))
                     
                     yPosition += rowHeight
                     
@@ -297,116 +297,116 @@ class PDFGenerator {
                         let fillColor = index % 2 == 0 ? ModernPDFColors.background : ModernPDFColors.surface
                         drawRect(rowRect, fillColor: fillColor, strokeColor: ModernPDFColors.border, lineWidth: 0.5, cornerRadius: 4)
                         
-                        xPos = margin + 10
+                        xPos = margin + 8
                         drawRTLText(item.description, font: ModernFonts.body, color: ModernPDFColors.text, alignment: .right,
-                                  rect: CGRect(x: xPos, y: yPosition + 10, width: colWidths[0] - 20, height: 15))
+                                  rect: CGRect(x: xPos, y: yPosition + 8, width: colWidths[0] - 16, height: 14))
                         
                         xPos += colWidths[0]
                         drawRTLCenterText(PersianNumberFormatter.shared.toPersian(item.quantity), 
                                         font: ModernFonts.body, color: ModernPDFColors.text,
-                                        rect: CGRect(x: xPos, y: yPosition + 10, width: colWidths[1] - 20, height: 15))
+                                        rect: CGRect(x: xPos, y: yPosition + 8, width: colWidths[1] - 16, height: 14))
                         
                         xPos += colWidths[1]
                         drawRTLCenterText(PersianNumberFormatter.shared.currencyString(from: item.unitPrice, currency: invoice.currency), 
                                         font: ModernFonts.body, color: ModernPDFColors.text,
-                                        rect: CGRect(x: xPos, y: yPosition + 10, width: colWidths[2] - 20, height: 15))
+                                        rect: CGRect(x: xPos, y: yPosition + 8, width: colWidths[2] - 16, height: 14))
                         
                         xPos += colWidths[2]
                         drawRTLCenterText(PersianNumberFormatter.shared.currencyString(from: item.total, currency: invoice.currency), 
                                         font: ModernFonts.body, color: ModernPDFColors.text,
-                                        rect: CGRect(x: xPos, y: yPosition + 10, width: colWidths[3] - 20, height: 15))
+                                        rect: CGRect(x: xPos, y: yPosition + 8, width: colWidths[3] - 16, height: 14))
                         
                         yPosition += rowHeight
                     }
                     
-                    yPosition += 25
+                    yPosition += 15
                     
                     // MARK: - Totals Section
                     
-                    let totalsCardWidth: CGFloat = 250
-                    let totalsCardHeight: CGFloat = 120
+                    let totalsCardWidth: CGFloat = 200
+                    let totalsCardHeight: CGFloat = 100
                     let totalsCardX = pageSize.width - margin - totalsCardWidth
                     
                     drawRect(CGRect(x: totalsCardX, y: yPosition, width: totalsCardWidth, height: totalsCardHeight),
-                           fillColor: ModernPDFColors.surface, strokeColor: ModernPDFColors.border, lineWidth: 1, cornerRadius: 12)
+                           fillColor: ModernPDFColors.surface, strokeColor: ModernPDFColors.border, lineWidth: 1, cornerRadius: 8)
                     
-                    var totalY = yPosition + 15
+                    var totalY = yPosition + 10
                     
                     // Subtotal
                     drawRTLText(PersianNumberFormatter.shared.currencyString(from: invoice.subtotal, currency: invoice.currency), 
                               font: ModernFonts.body, color: ModernPDFColors.text, alignment: .right,
-                              rect: CGRect(x: totalsCardX + 15, y: totalY, width: 100, height: 20))
+                              rect: CGRect(x: totalsCardX + 10, y: totalY, width: 80, height: 16))
                     drawRTLText("جمع کل:", font: ModernFonts.body, color: ModernPDFColors.text, alignment: .right,
-                              rect: CGRect(x: totalsCardX + 130, y: totalY, width: 100, height: 20))
-                    totalY += 25
+                              rect: CGRect(x: totalsCardX + 100, y: totalY, width: 80, height: 16))
+                    totalY += 20
                     
                     // Discount (if applicable)
                     if invoice.discountRate > 0 {
                         drawRTLText("-\(PersianNumberFormatter.shared.currencyString(from: invoice.discountAmount, currency: invoice.currency))", 
                                   font: ModernFonts.body, color: ModernPDFColors.error, alignment: .right,
-                                  rect: CGRect(x: totalsCardX + 15, y: totalY, width: 100, height: 20))
+                                  rect: CGRect(x: totalsCardX + 10, y: totalY, width: 80, height: 16))
                         drawRTLText("تخفیف:", font: ModernFonts.body, color: ModernPDFColors.text, alignment: .right,
-                                  rect: CGRect(x: totalsCardX + 130, y: totalY, width: 100, height: 20))
-                        totalY += 25
+                                  rect: CGRect(x: totalsCardX + 100, y: totalY, width: 80, height: 16))
+                        totalY += 20
                     }
                     
                     // Tax (if applicable)
                     if invoice.taxRate > 0 {
                         drawRTLText(PersianNumberFormatter.shared.currencyString(from: invoice.taxAmount, currency: invoice.currency), 
                                   font: ModernFonts.body, color: ModernPDFColors.warning, alignment: .right,
-                                  rect: CGRect(x: totalsCardX + 15, y: totalY, width: 100, height: 20))
+                                  rect: CGRect(x: totalsCardX + 10, y: totalY, width: 80, height: 16))
                         drawRTLText("مالیات:", font: ModernFonts.body, color: ModernPDFColors.text, alignment: .right,
-                                  rect: CGRect(x: totalsCardX + 130, y: totalY, width: 100, height: 20))
-                        totalY += 25
+                                  rect: CGRect(x: totalsCardX + 100, y: totalY, width: 80, height: 16))
+                        totalY += 20
                     }
                     
                     // Final total
                     drawRTLText(PersianNumberFormatter.shared.currencyString(from: invoice.total, currency: invoice.currency), 
                               font: ModernFonts.total, color: ModernPDFColors.accent, alignment: .right,
-                              rect: CGRect(x: totalsCardX + 15, y: totalY, width: 100, height: 25))
+                              rect: CGRect(x: totalsCardX + 10, y: totalY, width: 80, height: 18))
                     drawRTLText("مبلغ قابل پرداخت:", font: ModernFonts.total, color: ModernPDFColors.primary, alignment: .right,
-                              rect: CGRect(x: totalsCardX + 130, y: totalY, width: 100, height: 25))
+                              rect: CGRect(x: totalsCardX + 100, y: totalY, width: 80, height: 18))
                     
-                    yPosition += totalsCardHeight + 25
+                    yPosition += totalsCardHeight + 15
                     
-                    // MARK: - Account Number Section
+                    // MARK: - Account Number Section (Always show if exists)
                     if !invoice.accountNumber.isEmpty {
                         drawRTLText("اطلاعات پرداخت:", font: ModernFonts.subHeader, color: ModernPDFColors.primary, alignment: .right,
-                                  rect: CGRect(x: margin, y: yPosition, width: pageSize.width - 2*margin, height: 25))
-                        yPosition += 30
+                                  rect: CGRect(x: margin, y: yPosition, width: pageSize.width - 2*margin, height: 20))
+                        yPosition += 20
                         
-                        let accountCardHeight: CGFloat = 50
+                        let accountCardHeight: CGFloat = 40
                         drawRect(CGRect(x: margin, y: yPosition, width: pageSize.width - 2*margin, height: accountCardHeight),
-                               fillColor: ModernPDFColors.success.withAlphaComponent(0.1), strokeColor: ModernPDFColors.success, lineWidth: 1, cornerRadius: 12)
+                               fillColor: ModernPDFColors.success.withAlphaComponent(0.1), strokeColor: ModernPDFColors.success, lineWidth: 1, cornerRadius: 8)
                         
                         drawRTLText("شماره حساب یا شماره کارت:", font: ModernFonts.bodyBold, color: ModernPDFColors.primary, alignment: .right,
-                                  rect: CGRect(x: margin + 15, y: yPosition + 10, width: 200, height: 20))
+                                  rect: CGRect(x: margin + 10, y: yPosition + 5, width: 150, height: 16))
                         
-                        drawRTLText(invoice.accountNumber, font: ModernFonts.body, color: ModernPDFColors.text, alignment: .right,
-                                  rect: CGRect(x: margin + 15, y: yPosition + 25, width: pageSize.width - 2*margin - 30, height: 20))
+                        drawRTLText(invoice.accountNumber, font: ModernFonts.bodyBold, color: ModernPDFColors.success, alignment: .right,
+                                  rect: CGRect(x: margin + 170, y: yPosition + 5, width: pageSize.width - 2*margin - 180, height: 16))
                         
-                        yPosition += accountCardHeight + 25
+                        yPosition += accountCardHeight + 15
                     }
                     
                     // MARK: - Notes Section
                     if !invoice.notes.isEmpty {
                         drawRTLText("یادداشت:", font: ModernFonts.subHeader, color: ModernPDFColors.primary, alignment: .right,
-                                  rect: CGRect(x: margin, y: yPosition, width: pageSize.width - 2*margin, height: 25))
-                        yPosition += 30
+                                  rect: CGRect(x: margin, y: yPosition, width: pageSize.width - 2*margin, height: 20))
+                        yPosition += 20
                         
-                        let notesHeight: CGFloat = 60
+                        let notesHeight: CGFloat = 50
                         drawRect(CGRect(x: margin, y: yPosition, width: pageSize.width - 2*margin, height: notesHeight),
-                               fillColor: ModernPDFColors.warning.withAlphaComponent(0.1), strokeColor: ModernPDFColors.warning, lineWidth: 1, cornerRadius: 12)
+                               fillColor: ModernPDFColors.warning.withAlphaComponent(0.1), strokeColor: ModernPDFColors.warning, lineWidth: 1, cornerRadius: 8)
                         
                         drawRTLText(invoice.notes, font: ModernFonts.body, color: ModernPDFColors.text, alignment: .right,
-                                  rect: CGRect(x: margin + 15, y: yPosition + 15, width: pageSize.width - 2*margin - 30, height: notesHeight - 30))
-                        yPosition += notesHeight + 25
+                                  rect: CGRect(x: margin + 10, y: yPosition + 10, width: pageSize.width - 2*margin - 20, height: notesHeight - 20))
+                        yPosition += notesHeight + 15
                     }
                     
                     // MARK: - Footer Section
                     
-                    let footerHeight: CGFloat = 100
-                    let minFooterY = pageSize.height - footerHeight - 30
+                    let footerHeight: CGFloat = 80
+                    let minFooterY = pageSize.height - footerHeight - 20
                     if yPosition < minFooterY {
                         yPosition = minFooterY
                     }
@@ -415,29 +415,29 @@ class PDFGenerator {
                     drawLine(from: CGPoint(x: margin, y: yPosition),
                             to: CGPoint(x: pageSize.width - margin, y: yPosition),
                             color: ModernPDFColors.border, width: 2)
-                    yPosition += 20
+                    yPosition += 15
                     
                     // Signature section
                     if let signature = imageManager.signature {
-                        let signatureWidth: CGFloat = 140
-                        let signatureHeight: CGFloat = 60
-                        let signatureX = pageSize.width - margin - signatureWidth - 20
+                        let signatureWidth: CGFloat = 120
+                        let signatureHeight: CGFloat = 50
+                        let signatureX = pageSize.width - margin - signatureWidth - 15
                         
                         drawRTLText("امضا و مهر:", font: ModernFonts.bodyBold, color: ModernPDFColors.primary, alignment: .right,
-                                  rect: CGRect(x: signatureX, y: yPosition, width: signatureWidth, height: 25))
+                                  rect: CGRect(x: signatureX, y: yPosition, width: signatureWidth, height: 20))
                         
-                        let signatureRect = CGRect(x: signatureX, y: yPosition + 30, width: signatureWidth, height: signatureHeight)
-                        drawRect(signatureRect, strokeColor: ModernPDFColors.border, lineWidth: 1, cornerRadius: 8)
+                        let signatureRect = CGRect(x: signatureX, y: yPosition + 25, width: signatureWidth, height: signatureHeight)
+                        drawRect(signatureRect, strokeColor: ModernPDFColors.border, lineWidth: 1, cornerRadius: 6)
                         drawImage(signature, in: signatureRect)
                     }
                     
                     // Thank you message
                     drawRTLText("با تشکر از اعتماد شما", font: ModernFonts.body, color: ModernPDFColors.secondary, alignment: .right,
-                              rect: CGRect(x: margin, y: yPosition + 40, width: 250, height: 25))
+                              rect: CGRect(x: margin, y: yPosition + 35, width: 200, height: 20))
                     
                     // Page number
                     drawRTLCenterText("صفحه ۱", font: ModernFonts.small, color: ModernPDFColors.secondary,
-                                    rect: CGRect(x: margin, y: pageSize.height - 30, width: pageSize.width - 2*margin, height: 20))
+                                    rect: CGRect(x: margin, y: pageSize.height - 20, width: pageSize.width - 2*margin, height: 15))
                 }
                 
                 continuation.resume(returning: data)
