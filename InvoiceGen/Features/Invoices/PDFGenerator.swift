@@ -369,6 +369,25 @@ class PDFGenerator {
                     
                     yPosition += totalsCardHeight + 25
                     
+                    // MARK: - Account Number Section
+                    if !invoice.accountNumber.isEmpty {
+                        drawRTLText("اطلاعات پرداخت:", font: ModernFonts.subHeader, color: ModernPDFColors.primary, alignment: .right,
+                                  rect: CGRect(x: margin, y: yPosition, width: pageSize.width - 2*margin, height: 25))
+                        yPosition += 30
+                        
+                        let accountCardHeight: CGFloat = 50
+                        drawRect(CGRect(x: margin, y: yPosition, width: pageSize.width - 2*margin, height: accountCardHeight),
+                               fillColor: ModernPDFColors.success.withAlphaComponent(0.1), strokeColor: ModernPDFColors.success, lineWidth: 1, cornerRadius: 12)
+                        
+                        drawRTLText("شماره حساب یا شماره کارت:", font: ModernFonts.bodyBold, color: ModernPDFColors.primary, alignment: .right,
+                                  rect: CGRect(x: margin + 15, y: yPosition + 10, width: 200, height: 20))
+                        
+                        drawRTLText(invoice.accountNumber, font: ModernFonts.body, color: ModernPDFColors.text, alignment: .right,
+                                  rect: CGRect(x: margin + 15, y: yPosition + 25, width: pageSize.width - 2*margin - 30, height: 20))
+                        
+                        yPosition += accountCardHeight + 25
+                    }
+                    
                     // MARK: - Notes Section
                     if !invoice.notes.isEmpty {
                         drawRTLText("یادداشت:", font: ModernFonts.subHeader, color: ModernPDFColors.primary, alignment: .right,

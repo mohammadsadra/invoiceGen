@@ -472,6 +472,13 @@ struct InvoiceFormView: View {
                 value: $invoice.discountRate
             )
             
+            // Account/Card Number
+            ModernFormField(
+                title: "شماره حساب یا شماره کارت",
+                placeholder: "شماره حساب یا کارت بانکی را وارد کنید",
+                text: $invoice.accountNumber
+            )
+            
             // Summary Card
             VStack(spacing: 16) {
                 HStack {

@@ -71,6 +71,7 @@ struct Invoice: Identifiable, Codable {
     var customer: Customer = Customer()
     var items: [InvoiceItem] = [InvoiceItem()]
     var notes: String = ""
+    var accountNumber: String = "" // شماره حساب یا شماره کارت
     var taxRate: Double = 0.0
     var discountRate: Double = 0.0 // Discount percentage (0-100)
     var currency: Currency = .toman // Default to Toman
@@ -105,6 +106,7 @@ struct Invoice: Identifiable, Codable {
         self.customer = Customer()
         self.items = [InvoiceItem()]
         self.notes = ""
+        self.accountNumber = ""
         self.taxRate = 0.0
         self.discountRate = 0.0
         self.currency = .toman // Default to Toman
