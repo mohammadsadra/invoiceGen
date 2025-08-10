@@ -21,6 +21,7 @@ struct InvoiceDetailView: View {
     @State private var isExporting = false
     @State private var pdfData: Data?
     @State private var showingDocumentPicker = false
+    @State private var showingShareSheet = false
     @State private var showingAlert = false
     @State private var alertMessage = ""
     
@@ -96,6 +97,11 @@ struct InvoiceDetailView: View {
                 Button("باشه") { }
             } message: {
                 Text(alertMessage)
+            }
+            .sheet(isPresented: $showingShareSheet) {
+                if let data = pdfData {
+                    ShareSheet(activityItems: [createPDFURL(from: data)])
+                }
             }
             .overlay(
                 // Snackbar
@@ -272,9 +278,7 @@ struct InvoiceDetailView: View {
                 
                 Spacer()
                 
-                Text("مبلغ قابل پرداخت:")
-                    .font(.vazirmatenHeadline)
-                    .fontWeight(.bold)
+
             }
         }
         .padding()
@@ -352,7 +356,7 @@ struct InvoiceDetailView: View {
             
             HStack(spacing: 12) {
                 editButton
-                savePDFButton
+                sharePDFButton
                 deleteButton
             }
         }
@@ -372,25 +376,25 @@ struct InvoiceDetailView: View {
             .foregroundColor(.white)
         }
         .frame(maxWidth: .infinity)
-        .padding()
+        .frame(height: 50)
         .background(Color.green)
         .cornerRadius(10)
     }
     
-    private var savePDFButton: some View {
+    private var sharePDFButton: some View {
         Button(action: {
-            generateAndSavePDF()
+            generateAndSharePDF()
         }) {
             HStack {
-                Image(systemName: "doc.badge.plus")
+                Image(systemName: "square.and.arrow.up")
                     .font(.title2)
-                Text("ذخیره PDF")
+                Text("اشتراک")
                     .font(.vazirmatenBody)
             }
             .foregroundColor(.white)
         }
         .frame(maxWidth: .infinity)
-        .padding()
+        .frame(height: 50)
         .background(Color.blue)
         .cornerRadius(10)
     }
@@ -409,7 +413,7 @@ struct InvoiceDetailView: View {
             .foregroundColor(.white)
         }
         .frame(maxWidth: .infinity)
-        .padding()
+        .frame(height: 50)
         .background(Color.red)
         .cornerRadius(10)
     }
@@ -442,7 +446,34 @@ struct InvoiceDetailView: View {
         }
     }
     
+    private func generateAndSharePDF() {
+        isExporting = true
+        
+        Task {
+            let data = await PDFGenerator.generateInvoicePDF(invoice: invoice)
+            
+            DispatchQueue.main.async {
+                self.isExporting = false
+                self.pdfData = data
+                self.showingShareSheet = true
+            }
+        }
+    }
+    
     // MARK: - Helper Functions
+    private func createPDFURL(from data: Data) -> URL {
+        let fileName = "Invoice_\(invoice.invoiceNumber).pdf"
+        let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
+        
+        do {
+            try data.write(to: tempURL)
+            return tempURL
+        } catch {
+            print("Error creating PDF file: \(error)")
+            return tempURL
+        }
+    }
+    
     private func showSnackbar(message: String) {
         snackbarMessage = message
         withAnimation {

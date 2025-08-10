@@ -7,6 +7,7 @@
 
 import SwiftUI
 import UniformTypeIdentifiers
+import PDFKit
 
 struct InvoicePreviewView: View {
     let invoice: Invoice
@@ -22,43 +23,19 @@ struct InvoicePreviewView: View {
     
     var body: some View {
         NavigationView {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    // MARK: - Header Section (Title on the right)
-                    modernHeaderSection
-                    
-                    // MARK: - Invoice Info Section (Right-aligned)
-                    modernInvoiceInfoSection
-                    
-                    // MARK: - Company Information Section
-                    modernCompanySection
-                    
-                    // MARK: - Customer Information Section
-                    modernCustomerSection
-                    
-                    // MARK: - Items Table Section
-                    modernItemsTableSection
-                    
-                    // MARK: - Totals Section
-                    modernTotalsSection
-                    
-                    // MARK: - Account Number Section
-                    if !invoice.accountNumber.isEmpty {
-                        modernAccountNumberSection
+            VStack(spacing: 0) {
+                // PDF Viewer
+                if let data = pdfData {
+                    PDFKitView(data: data)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    // Loading or placeholder
+                    VStack {
+                        ProgressView("در حال تولید PDF...")
+                            .font(.vazirmatenBody)
                     }
-                    
-                    // MARK: - Notes Section
-                    if !invoice.notes.isEmpty {
-                        modernNotesSection
-                    }
-                    
-                    // MARK: - Footer Section
-                    modernFooterSection
-                    
-                    Spacer(minLength: 50)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 16)
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("پیش‌نمایش فاکتور")
@@ -68,14 +45,10 @@ struct InvoicePreviewView: View {
                     Button(action: {
                         dismiss()
                     }) {
-                        HStack {
-                            Image(systemName: "xmark.circle.fill")
-                                .font(.title2)
-                            Text("بازگشت")
-                                .font(.vazirmatenBody)
-                        }
-                        .foregroundColor(.red)
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 16))
                     }
+                    .frame(width: 44, height: 44)
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -84,45 +57,33 @@ struct InvoicePreviewView: View {
                         Button(action: {
                             generateAndSavePDF()
                         }) {
-                            HStack {
-                                if isExporting {
-                                    ProgressView()
-                                        .scaleEffect(0.8)
-                                } else {
-                                    Image(systemName: "doc.badge.plus")
-                                }
-                                Text("ذخیره PDF")
-                                    .font(.vazirmatenBody)
+                            if isExporting {
+                                ProgressView()
+                                    .scaleEffect(0.6)
+                            } else {
+                                Image(systemName: "doc.badge.plus")
+                                    .font(.system(size: 16))
                             }
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                            .background(Color.blue)
-                            .cornerRadius(8)
                         }
+                        .frame(width: 44, height: 44)
                         .disabled(isExporting)
                         
                         // Share Button
                         Button(action: {
                             generateAndSharePDF()
                         }) {
-                            HStack {
-                                Image(systemName: "square.and.arrow.up")
-                                Text("اشتراک")
-                                    .font(.vazirmatenBody)
-                            }
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                            .background(Color.green)
-                            .cornerRadius(8)
+                            Image(systemName: "square.and.arrow.up")
+                                .font(.system(size: 16))
                         }
-                        .disabled(isExporting)
+                        .frame(width: 44, height: 44)
                     }
                 }
             }
         }
         .environment(\.layoutDirection, .rightToLeft)
+        .onAppear {
+            generatePDF()
+        }
         .sheet(isPresented: $showingShareSheet) {
             if let data = pdfData {
                 ShareSheet(activityItems: [createPDFURL(from: data)])
@@ -440,19 +401,16 @@ struct InvoicePreviewView: View {
                             .foregroundColor(.primary)
                     }
                 }
-                
+                if invoice.taxRate > 0 && invoice.discountRate > 0 {
                 Divider()
                 
-                // Final total
-                HStack {
-                    Text(PersianNumberFormatter.shared.toPersian(invoice.total))
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(.blue)
-                        .frame(width: 80, alignment: .leading)
-                    
-                    Text("مبلغ قابل پرداخت:")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(.primary)
+                                 // Final total
+                 HStack {
+                     Text(PersianNumberFormatter.shared.toPersian(invoice.total))
+                         .font(.system(size: 14, weight: .bold))
+                         .foregroundColor(.blue)
+                         .frame(width: 80, alignment: .leading)
+                 }
                 }
             }
             .padding(12)
@@ -570,6 +528,16 @@ struct InvoicePreviewView: View {
         }
     }
     
+    private func generatePDF() {
+        Task {
+            let data = await PDFGenerator.generateInvoicePDF(invoice: invoice)
+            
+            DispatchQueue.main.async {
+                self.pdfData = data
+            }
+        }
+    }
+    
     private func generateAndSavePDF() {
         isExporting = true
         
@@ -615,6 +583,29 @@ struct PDFDocument: FileDocument {
     
     func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
         FileWrapper(regularFileWithContents: data)
+    }
+}
+
+struct PDFKitView: UIViewRepresentable {
+    let data: Data
+    
+    func makeUIView(context: Context) -> PDFView {
+        let pdfView = PDFView()
+        pdfView.autoScales = true
+        pdfView.displayMode = .singlePage
+        pdfView.displayDirection = .vertical
+        
+        if let document = PDFKit.PDFDocument(data: data) {
+            pdfView.document = document
+        }
+        
+        return pdfView
+    }
+    
+    func updateUIView(_ uiView: PDFView, context: Context) {
+        if let document = PDFKit.PDFDocument(data: data) {
+            uiView.document = document
+        }
     }
 }
 

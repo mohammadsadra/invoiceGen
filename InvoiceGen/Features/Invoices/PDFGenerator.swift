@@ -364,8 +364,6 @@ class PDFGenerator {
                     drawRTLText(PersianNumberFormatter.shared.currencyString(from: invoice.total, currency: invoice.currency), 
                               font: ModernFonts.total, color: ModernPDFColors.accent, alignment: .right,
                               rect: CGRect(x: totalsCardX + 10, y: totalY, width: 80, height: 18))
-                    drawRTLText("مبلغ قابل پرداخت:", font: ModernFonts.total, color: ModernPDFColors.primary, alignment: .right,
-                              rect: CGRect(x: totalsCardX + 100, y: totalY, width: 80, height: 18))
                     
                     yPosition += totalsCardHeight + 15
                     

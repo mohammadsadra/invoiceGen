@@ -511,8 +511,6 @@ struct InvoiceFormView: View {
                 Divider()
                 
                 HStack {
-                    Text("مبلغ قابل پرداخت:")
-                        .fontWeight(.semibold)
                     Spacer()
                     Text(PersianNumberFormatter.shared.currencyString(from: invoice.total, currency: invoice.currency))
                         .font(.vazirmatenHeadline)
