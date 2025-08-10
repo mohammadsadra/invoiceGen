@@ -23,236 +23,44 @@ struct InvoicePreviewView: View {
     var body: some View {
         NavigationView {
             ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    // Header with Logo
-                    VStack(alignment: .center, spacing: 12) {
-                        if let logo = imageManager.companyLogo {
-                            Image(uiImage: logo)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(maxHeight: 80)
-                        }
-                        
-                        Text(companyInfoManager.companyInfo.name)
-                            .font(.vazirmatenTitle)
-                            .fontWeight(.bold)
-                            .foregroundColor(.primary)
-                        
-                        Text(companyInfoManager.companyInfo.address)
-                            .font(.vazirmatenBody)
-                        Text(companyInfoManager.companyInfo.city)
-                            .font(.vazirmatenBody)
-                        Text(companyInfoManager.companyInfo.phone)
-                            .font(.vazirmatenBody)
-                        Text(companyInfoManager.companyInfo.email)
-                            .font(.vazirmatenBody)
-                            .foregroundColor(.blue)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.bottom, 20)
+                VStack(alignment: .leading, spacing: 16) {
+                    // MARK: - Header Section (Title on the right)
+                    modernHeaderSection
                     
-                    Divider()
+                    // MARK: - Invoice Info Section (Right-aligned)
+                    modernInvoiceInfoSection
                     
-                    // Invoice Info
-                    HStack {
-                        VStack(alignment: .trailing, spacing: 4) {
-                            Text("فاکتور")
-                                .font(.vazirmatenTitle)
-                                .fontWeight(.bold)
-                            Text("شماره: \(invoice.invoiceNumber)")
-                                .font(.vazirmatenHeadline)
-                        }
-                        
-                        Spacer()
-                        
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("تاریخ صدور: \(PersianDateFormatter.shared.string(from: invoice.date))")
-                                .font(.vazirmatenBody)
-                            Text("تاریخ سررسید: \(PersianDateFormatter.shared.string(from: invoice.dueDate))")
-                                .font(.vazirmatenBody)
-                        }
+                    // MARK: - Company Information Section
+                    modernCompanySection
+                    
+                    // MARK: - Customer Information Section
+                    modernCustomerSection
+                    
+                    // MARK: - Items Table Section
+                    modernItemsTableSection
+                    
+                    // MARK: - Totals Section
+                    modernTotalsSection
+                    
+                    // MARK: - Account Number Section
+                    if !invoice.accountNumber.isEmpty {
+                        modernAccountNumberSection
                     }
                     
-                    Divider()
-                    
-                    // Customer Info
-                    VStack(alignment: .trailing, spacing: 8) {
-                        Text("صورتحساب برای:")
-                            .font(.vazirmatenHeadline)
-                            .fontWeight(.semibold)
-                        
-                        Text(invoice.customer.name)
-                            .font(.vazirmatenBody)
-                            .fontWeight(.medium)
-                        
-                        if !invoice.customer.email.isEmpty {
-                            Text(invoice.customer.email)
-                                .font(.vazirmatenBody)
-                                .foregroundColor(.blue)
-                        }
-                        
-                        if !invoice.customer.phone.isEmpty {
-                            Text(invoice.customer.phone)
-                                .font(.vazirmatenBody)
-                        }
-                        
-                        if !invoice.customer.address.isEmpty {
-                            Text(invoice.customer.address)
-                                .font(.vazirmatenBody)
-                        }
-                        
-                        if !invoice.customer.city.isEmpty {
-                            Text(invoice.customer.city)
-                                .font(.vazirmatenBody)
-                        }
-                    }
-                    .padding(.vertical, 8)
-                    
-                    Divider()
-                    
-                    // Items Table
-                    VStack(spacing: 0) {
-                        // Table Header
-                        HStack {
-                            Text("شرح")
-                                .font(.vazirmatenBody)
-                                .fontWeight(.semibold)
-                                .frame(maxWidth: .infinity, alignment: .trailing)
-                            Text("تعداد")
-                                .font(.vazirmatenBody)
-                                .fontWeight(.semibold)
-                                .frame(width: 60, alignment: .center)
-                            Text("قیمت واحد")
-                                .font(.vazirmatenBody)
-                                .fontWeight(.semibold)
-                                .frame(width: 80, alignment: .trailing)
-                            Text("جمع")
-                                .font(.vazirmatenBody)
-                                .fontWeight(.semibold)
-                                .frame(width: 80, alignment: .trailing)
-                        }
-                        .padding(.vertical, 12)
-                        .background(Color.gray.opacity(0.1))
-                        
-                        // Table Rows
-                        ForEach(invoice.items) { item in
-                            HStack {
-                                Text(item.description)
-                                    .font(.vazirmatenBody)
-                                    .frame(maxWidth: .infinity, alignment: .trailing)
-                                Text(PersianNumberFormatter.shared.toPersian(item.quantity))
-                                    .font(.vazirmatenBody)
-                                    .frame(width: 60, alignment: .center)
-                                Text(PersianNumberFormatter.shared.currencyString(from: item.unitPrice, currency: invoice.currency))
-                                    .font(.vazirmatenBody)
-                                    .frame(width: 80, alignment: .trailing)
-                                Text(PersianNumberFormatter.shared.currencyString(from: item.total, currency: invoice.currency))
-                                    .font(.vazirmatenBody)
-                                    .frame(width: 80, alignment: .trailing)
-                            }
-                            .padding(.vertical, 8)
-                            .background(Color.clear)
-                            
-                            Divider()
-                        }
-                    }
-                    .background(Color.white)
-                    .cornerRadius(8)
-                    .shadow(radius: 2)
-                    
-                    // Totals
-                    VStack(spacing: 8) {
-                        HStack {
-                            Text(PersianNumberFormatter.shared.currencyString(from: invoice.subtotal, currency: invoice.currency))
-                                .font(.vazirmatenBody)
-                                .frame(width: 120, alignment: .leading)
-                            Spacer()
-                            Text("جمع کل:")
-                                .font(.vazirmatenBody)
-                        }
-                        
-                        if invoice.discountRate > 0 {
-                            HStack {
-                                Text("-\(PersianNumberFormatter.shared.currencyString(from: invoice.discountAmount, currency: invoice.currency))")
-                                    .font(.vazirmatenBody)
-                                    .foregroundColor(.red)
-                                    .frame(width: 120, alignment: .leading)
-                                Spacer()
-                                Text("تخفیف (\(PersianNumberFormatter.shared.toPersian(invoice.discountRate))%):")
-                                    .font(.vazirmatenBody)
-                            }
-                            
-                            HStack {
-                                Text(PersianNumberFormatter.shared.currencyString(from: invoice.subtotalAfterDiscount, currency: invoice.currency))
-                                    .font(.vazirmatenBody)
-                                    .frame(width: 120, alignment: .leading)
-                                Spacer()
-                                Text("جمع پس از تخفیف:")
-                                    .font(.vazirmatenBody)
-                            }
-                        }
-                        
-                        if invoice.taxRate > 0 {
-                            HStack {
-                                Text(PersianNumberFormatter.shared.currencyString(from: invoice.taxAmount, currency: invoice.currency))
-                                    .font(.vazirmatenBody)
-                                    .frame(width: 120, alignment: .leading)
-                                Spacer()
-                                Text("مالیات (\(PersianNumberFormatter.shared.toPersian(invoice.taxRate))%):")
-                                    .font(.vazirmatenBody)
-                            }
-                        }
-                        
-                        Divider()
-                        
-                        HStack {
-                            Text(PersianNumberFormatter.shared.currencyString(from: invoice.total, currency: invoice.currency))
-                                .font(.vazirmatenHeadline)
-                                .fontWeight(.bold)
-                                .foregroundColor(.primary)
-                                .frame(width: 120, alignment: .leading)
-                            Spacer()
-                            Text("مبلغ نهایی:")
-                                .font(.vazirmatenHeadline)
-                                .fontWeight(.bold)
-                        }
-                    }
-                    .padding(.top, 16)
-                    
-                    // Notes
+                    // MARK: - Notes Section
                     if !invoice.notes.isEmpty {
-                        Divider()
-                        
-                        VStack(alignment: .trailing, spacing: 8) {
-                            Text("یادداشت:")
-                                .font(.vazirmatenHeadline)
-                                .fontWeight(.semibold)
-                            Text(invoice.notes)
-                                .font(.vazirmatenBody)
-                        }
+                        modernNotesSection
                     }
                     
-                    // Signature
-                    if let signature = imageManager.signature {
-                        Divider()
-                        
-                        VStack(alignment: .trailing, spacing: 8) {
-                            Text("امضا:")
-                                .font(.vazirmatenHeadline)
-                                .fontWeight(.semibold)
-                            
-                            Image(uiImage: signature)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(maxHeight: 60)
-                                .frame(maxWidth: 200)
-                        }
-                    }
+                    // MARK: - Footer Section
+                    modernFooterSection
                     
                     Spacer(minLength: 50)
                 }
-                .padding()
+                .padding(.horizontal, 20)
+                .padding(.vertical, 16)
             }
+            .background(Color(.systemGroupedBackground))
             .navigationTitle("پیش‌نمایش فاکتور")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -271,27 +79,46 @@ struct InvoicePreviewView: View {
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Menu {
-                        Button(action: {
-                            generateAndSharePDF()
-                        }) {
-                            Label("اشتراک‌گذاری PDF", systemImage: "square.and.arrow.up")
-                        }
-                        
+                    HStack(spacing: 12) {
+                        // Save PDF Button
                         Button(action: {
                             generateAndSavePDF()
                         }) {
-                            Label("ذخیره در فایل‌ها", systemImage: "folder.badge.plus")
+                            HStack {
+                                if isExporting {
+                                    ProgressView()
+                                        .scaleEffect(0.8)
+                                } else {
+                                    Image(systemName: "doc.badge.plus")
+                                }
+                                Text("ذخیره PDF")
+                                    .font(.vazirmatenBody)
+                            }
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(Color.blue)
+                            .cornerRadius(8)
                         }
-                    } label: {
-                        if isExporting {
-                            ProgressView()
-                                .scaleEffect(0.8)
-                        } else {
-                            Image(systemName: "doc.badge.plus")
+                        .disabled(isExporting)
+                        
+                        // Share Button
+                        Button(action: {
+                            generateAndSharePDF()
+                        }) {
+                            HStack {
+                                Image(systemName: "square.and.arrow.up")
+                                Text("اشتراک")
+                                    .font(.vazirmatenBody)
+                            }
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(Color.green)
+                            .cornerRadius(8)
                         }
+                        .disabled(isExporting)
                     }
-                    .disabled(isExporting)
                 }
             }
         }
@@ -325,6 +152,410 @@ struct InvoicePreviewView: View {
         }
     }
     
+    // MARK: - Header Section
+    private var modernHeaderSection: some View {
+        VStack(alignment: .trailing, spacing: 0) {
+            Text("پیش فاکتور")
+                .font(.system(size: 28, weight: .bold))
+                .foregroundColor(.primary)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+        }
+        .padding(.bottom, 10)
+    }
+    
+    // MARK: - Invoice Info Section
+    private var modernInvoiceInfoSection: some View {
+        HStack {
+            Spacer()
+            
+            VStack(alignment: .trailing, spacing: 8) {
+                Text("تاریخ: \(PersianDateFormatter.shared.string(from: invoice.date))")
+                    .font(.system(size: 12))
+                    .foregroundColor(.secondary)
+                
+                Text("شماره فاکتور: \(invoice.invoiceNumber)")
+                    .font(.system(size: 12))
+                    .foregroundColor(.secondary)
+            }
+            .padding(12)
+            .background(Color(.systemBackground))
+            .cornerRadius(8)
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color(.systemGray4), lineWidth: 1)
+            )
+        }
+        .padding(.bottom, 15)
+    }
+    
+    // MARK: - Company Information Section
+    private var modernCompanySection: some View {
+        VStack(alignment: .trailing, spacing: 12) {
+            Text("مشخصات فروشنده:")
+                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(.primary)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+            
+            HStack(alignment: .top, spacing: 15) {
+                // Company Info
+                VStack(alignment: .trailing, spacing: 8) {
+                    Text("نام شرکت: \(companyInfoManager.companyInfo.name)")
+                        .font(.system(size: 12))
+                        .foregroundColor(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                    
+                    if !companyInfoManager.companyInfo.phone.isEmpty {
+                        Text("تلفن: \(companyInfoManager.companyInfo.phone)")
+                            .font(.system(size: 12))
+                            .foregroundColor(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                    }
+                    
+                    if !companyInfoManager.companyInfo.email.isEmpty {
+                        Text("ایمیل: \(companyInfoManager.companyInfo.email)")
+                            .font(.system(size: 12))
+                            .foregroundColor(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                    }
+                    
+                    if !companyInfoManager.companyInfo.website.isEmpty {
+                        Text("وب‌سایت: \(companyInfoManager.companyInfo.website)")
+                            .font(.system(size: 12))
+                            .foregroundColor(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                    }
+                    
+                    Text("نشانی: \(companyInfoManager.companyInfo.address)")
+                        .font(.system(size: 12))
+                        .foregroundColor(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                    
+                    if !companyInfoManager.companyInfo.city.isEmpty {
+                        Text("شهر: \(companyInfoManager.companyInfo.city)")
+                            .font(.system(size: 12))
+                            .foregroundColor(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                    }
+                }
+                
+                // Company Logo (if exists)
+                if let logo = imageManager.companyLogo {
+                    Image(uiImage: logo)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 50, height: 50)
+                        .cornerRadius(6)
+                }
+            }
+        }
+        .padding(12)
+        .background(Color(.systemBackground))
+        .cornerRadius(8)
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color(.systemGray4), lineWidth: 1)
+        )
+        .padding(.bottom, 15)
+    }
+    
+    // MARK: - Customer Information Section
+    private var modernCustomerSection: some View {
+        VStack(alignment: .trailing, spacing: 12) {
+            Text("مشخصات خریدار:")
+                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(.primary)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+            
+            VStack(alignment: .trailing, spacing: 8) {
+                Text("نام خریدار: \(invoice.customer.name)")
+                    .font(.system(size: 12))
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+                
+                if !invoice.customer.phone.isEmpty {
+                    Text("تلفن: \(invoice.customer.phone)")
+                        .font(.system(size: 12))
+                        .foregroundColor(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                }
+                
+                if !invoice.customer.email.isEmpty {
+                    Text("ایمیل: \(invoice.customer.email)")
+                        .font(.system(size: 12))
+                        .foregroundColor(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                }
+                
+                if !invoice.customer.postalCode.isEmpty {
+                    Text("کد پستی: \(invoice.customer.postalCode)")
+                        .font(.system(size: 12))
+                        .foregroundColor(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                }
+                
+                Text("نشانی: \(invoice.customer.address)")
+                    .font(.system(size: 12))
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+                
+                if !invoice.customer.city.isEmpty {
+                    Text("شهر: \(invoice.customer.city)")
+                        .font(.system(size: 12))
+                        .foregroundColor(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                }
+            }
+        }
+        .padding(12)
+        .background(Color(.systemBackground))
+        .cornerRadius(8)
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color(.systemGray4), lineWidth: 1)
+        )
+        .padding(.bottom, 15)
+    }
+    
+    // MARK: - Items Table Section
+    private var modernItemsTableSection: some View {
+        VStack(alignment: .trailing, spacing: 12) {
+            Text("مشخصات کالا یا خدمات:")
+                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(.primary)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+            
+            VStack(spacing: 0) {
+                // Table Header
+                HStack {
+                    Text("شرح کالا یا خدمات")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                    
+                    Text("تعداد")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(.white)
+                        .frame(width: 60, alignment: .center)
+                    
+                    Text("قیمت واحد")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(.white)
+                        .frame(width: 80, alignment: .center)
+                    
+                    Text("جمع")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(.white)
+                        .frame(width: 80, alignment: .center)
+                }
+                .padding(.vertical, 8)
+                .padding(.horizontal, 12)
+                .background(Color.blue)
+                .cornerRadius(6, corners: [.topLeft, .topRight])
+                
+                // Table Rows
+                ForEach(Array(invoice.items.enumerated()), id: \.element.id) { index, item in
+                    HStack {
+                        Text(item.description)
+                            .font(.system(size: 12))
+                            .foregroundColor(.primary)
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                        
+                        Text(PersianNumberFormatter.shared.toPersian(item.quantity))
+                            .font(.system(size: 12))
+                            .foregroundColor(.primary)
+                            .frame(width: 60, alignment: .center)
+                        
+                        Text(PersianNumberFormatter.shared.currencyString(from: item.unitPrice, currency: invoice.currency))
+                            .font(.system(size: 12))
+                            .foregroundColor(.primary)
+                            .frame(width: 80, alignment: .center)
+                        
+                        Text(PersianNumberFormatter.shared.currencyString(from: item.total, currency: invoice.currency))
+                            .font(.system(size: 12))
+                            .foregroundColor(.primary)
+                            .frame(width: 80, alignment: .center)
+                    }
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 12)
+                    .background(index % 2 == 0 ? Color(.systemBackground) : Color(.systemGray6))
+                    
+                    if index < invoice.items.count - 1 {
+                        Divider()
+                            .padding(.horizontal, 12)
+                    }
+                }
+            }
+            .background(Color(.systemBackground))
+            .cornerRadius(6)
+            .overlay(
+                RoundedRectangle(cornerRadius: 6)
+                    .stroke(Color(.systemGray4), lineWidth: 0.5)
+            )
+        }
+        .padding(.bottom, 15)
+    }
+    
+    // MARK: - Totals Section
+    private var modernTotalsSection: some View {
+        HStack {
+            Spacer()
+            
+            VStack(alignment: .trailing, spacing: 8) {
+                // Subtotal
+                HStack {
+                    Text(PersianNumberFormatter.shared.currencyString(from: invoice.subtotal, currency: invoice.currency))
+                        .font(.system(size: 12))
+                        .foregroundColor(.primary)
+                        .frame(width: 80, alignment: .leading)
+                    
+                    Text("جمع کل:")
+                        .font(.system(size: 12))
+                        .foregroundColor(.primary)
+                }
+                
+                // Discount (if applicable)
+                if invoice.discountRate > 0 {
+                    HStack {
+                        Text("-\(PersianNumberFormatter.shared.currencyString(from: invoice.discountAmount, currency: invoice.currency))")
+                            .font(.system(size: 12))
+                            .foregroundColor(.red)
+                            .frame(width: 80, alignment: .leading)
+                        
+                        Text("تخفیف:")
+                            .font(.system(size: 12))
+                            .foregroundColor(.primary)
+                    }
+                }
+                
+                // Tax (if applicable)
+                if invoice.taxRate > 0 {
+                    HStack {
+                        Text(PersianNumberFormatter.shared.currencyString(from: invoice.taxAmount, currency: invoice.currency))
+                            .font(.system(size: 12))
+                            .foregroundColor(.orange)
+                            .frame(width: 80, alignment: .leading)
+                        
+                        Text("مالیات:")
+                            .font(.system(size: 12))
+                            .foregroundColor(.primary)
+                    }
+                }
+                
+                Divider()
+                
+                // Final total
+                HStack {
+                    Text(PersianNumberFormatter.shared.currencyString(from: invoice.total, currency: invoice.currency))
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(.blue)
+                        .frame(width: 80, alignment: .leading)
+                    
+                    Text("مبلغ قابل پرداخت:")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(.primary)
+                }
+            }
+            .padding(12)
+            .background(Color(.systemBackground))
+            .cornerRadius(8)
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color(.systemGray4), lineWidth: 1)
+            )
+        }
+        .padding(.bottom, 15)
+    }
+    
+    // MARK: - Account Number Section
+    private var modernAccountNumberSection: some View {
+        VStack(alignment: .trailing, spacing: 12) {
+            Text("اطلاعات پرداخت:")
+                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(.primary)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+            
+            HStack {
+                // Number on the left
+                Text(invoice.accountNumber)
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(.green)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                
+                // Title on the right
+                Text("شماره حساب یا شماره کارت:")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(.primary)
+            }
+            .padding(12)
+            .background(Color.green.opacity(0.1))
+            .cornerRadius(8)
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color.green, lineWidth: 1)
+            )
+        }
+        .padding(.bottom, 15)
+    }
+    
+    // MARK: - Notes Section
+    private var modernNotesSection: some View {
+        VStack(alignment: .trailing, spacing: 12) {
+            Text("یادداشت:")
+                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(.primary)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+            
+            Text(invoice.notes)
+                .font(.system(size: 12))
+                .foregroundColor(.primary)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+                .padding(12)
+                .background(Color.orange.opacity(0.1))
+                .cornerRadius(8)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.orange, lineWidth: 1)
+                )
+        }
+        .padding(.bottom, 15)
+    }
+    
+    // MARK: - Footer Section
+    private var modernFooterSection: some View {
+        VStack(alignment: .trailing, spacing: 12) {
+            Divider()
+                .padding(.vertical, 8)
+            
+            HStack {
+                // Thank you message
+                Text("با تشکر از اعتماد شما")
+                    .font(.system(size: 12))
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+                
+                // Signature (if exists)
+                if let signature = imageManager.signature {
+                    VStack(alignment: .trailing, spacing: 4) {
+                        Text("امضا و مهر:")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundColor(.primary)
+                        
+                        Image(uiImage: signature)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 120, height: 50)
+                            .cornerRadius(6)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 6)
+                                    .stroke(Color(.systemGray4), lineWidth: 1)
+                            )
+                    }
+                }
+            }
+        }
+    }
+    
+    // MARK: - Helper Functions
     private func generateAndSharePDF() {
         isExporting = true
         
@@ -349,61 +580,6 @@ struct InvoicePreviewView: View {
                 self.isExporting = false
                 self.pdfData = data
                 self.showingDocumentPicker = true
-            }
-        }
-    }
-    
-    private func sharePDF(data: Data) {
-        let fileName = "Invoice_\(invoice.invoiceNumber).pdf"
-        let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
-        
-        do {
-            try data.write(to: tempURL)
-            
-            DispatchQueue.main.async {
-                let activityVC = UIActivityViewController(activityItems: [tempURL], applicationActivities: nil)
-                
-                // Configure for iPad
-                if let popover = activityVC.popoverPresentationController {
-                    popover.sourceView = UIApplication.shared.connectedScenes
-                        .compactMap { $0 as? UIWindowScene }
-                        .flatMap { $0.windows }
-                        .first { $0.isKeyWindow }?.rootViewController?.view
-                    popover.sourceRect = CGRect(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height / 2, width: 0, height: 0)
-                    popover.permittedArrowDirections = []
-                }
-                
-                // Find the topmost view controller
-                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                   let window = windowScene.windows.first(where: { $0.isKeyWindow }),
-                   let rootVC = window.rootViewController {
-                    
-                    var topVC = rootVC
-                    while let presentedVC = topVC.presentedViewController {
-                        topVC = presentedVC
-                    }
-                    
-                    topVC.present(activityVC, animated: true)
-                }
-            }
-        } catch {
-            print("Error sharing PDF: \(error)")
-            // Show an alert to the user
-            DispatchQueue.main.async {
-                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                   let window = windowScene.windows.first(where: { $0.isKeyWindow }),
-                   let rootVC = window.rootViewController {
-                    
-                    let alert = UIAlertController(title: "خطا", message: "خطا در ذخیره فایل PDF", preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: "باشه", style: .default))
-                    
-                    var topVC = rootVC
-                    while let presentedVC = topVC.presentedViewController {
-                        topVC = presentedVC
-                    }
-                    
-                    topVC.present(alert, animated: true)
-                }
             }
         }
     }
@@ -453,6 +629,23 @@ struct ShareSheet: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
 
+// MARK: - Corner Radius Extension
+extension View {
+    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
+        clipShape(RoundedCorner(radius: radius, corners: corners))
+    }
+}
+
+struct RoundedCorner: Shape {
+    var radius: CGFloat = .infinity
+    var corners: UIRectCorner = .allCorners
+
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+        return Path(path.cgPath)
+    }
+}
+
 #Preview {
     var sampleInvoice = Invoice()
     sampleInvoice.invoiceNumber = "INV-001"
@@ -461,6 +654,7 @@ struct ShareSheet: UIViewControllerRepresentable {
     sampleInvoice.customer.phone = "09123456789"
     sampleInvoice.customer.address = "خیابان ولیعصر"
     sampleInvoice.customer.city = "تهران"
+    sampleInvoice.accountNumber = "1234-5678-9012-3456"
     
     var item1 = InvoiceItem()
     item1.description = "طراحی وب‌سایت"
@@ -475,6 +669,7 @@ struct ShareSheet: UIViewControllerRepresentable {
     sampleInvoice.items = [item1, item2]
     sampleInvoice.notes = "لطفاً تا تاریخ سررسید پرداخت نمایید."
     sampleInvoice.taxRate = 9
+    sampleInvoice.discountRate = 5
     
     return InvoicePreviewView(invoice: sampleInvoice)
 }
