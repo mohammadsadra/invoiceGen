@@ -403,7 +403,7 @@ struct InvoicePreviewView: View {
             VStack(alignment: .trailing, spacing: 8) {
                 // Subtotal
                 HStack {
-                    Text(PersianNumberFormatter.shared.currencyString(from: invoice.subtotal, currency: invoice.currency))
+                    Text(PersianNumberFormatter.shared.toPersian(invoice.subtotal))
                         .font(.system(size: 12))
                         .foregroundColor(.primary)
                         .frame(width: 80, alignment: .leading)
@@ -416,7 +416,7 @@ struct InvoicePreviewView: View {
                 // Discount (if applicable)
                 if invoice.discountRate > 0 {
                     HStack {
-                        Text("-\(PersianNumberFormatter.shared.currencyString(from: invoice.discountAmount, currency: invoice.currency))")
+                        Text("-\(PersianNumberFormatter.shared.toPersian(invoice.discountAmount))")
                             .font(.system(size: 12))
                             .foregroundColor(.red)
                             .frame(width: 80, alignment: .leading)
@@ -430,7 +430,7 @@ struct InvoicePreviewView: View {
                 // Tax (if applicable)
                 if invoice.taxRate > 0 {
                     HStack {
-                        Text(PersianNumberFormatter.shared.currencyString(from: invoice.taxAmount, currency: invoice.currency))
+                        Text(PersianNumberFormatter.shared.toPersian(invoice.taxAmount))
                             .font(.system(size: 12))
                             .foregroundColor(.orange)
                             .frame(width: 80, alignment: .leading)
@@ -445,7 +445,7 @@ struct InvoicePreviewView: View {
                 
                 // Final total
                 HStack {
-                    Text(PersianNumberFormatter.shared.currencyString(from: invoice.total, currency: invoice.currency))
+                    Text(PersianNumberFormatter.shared.toPersian(invoice.total))
                         .font(.system(size: 14, weight: .bold))
                         .foregroundColor(.blue)
                         .frame(width: 80, alignment: .leading)

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct InvoiceDetailView: View {
     @State var invoice: Invoice
@@ -15,6 +16,13 @@ struct InvoiceDetailView: View {
     @State private var showingPreview = false
     @State private var showingDeleteAlert = false
     @State private var customerToDelete: Invoice?
+    
+    // PDF state
+    @State private var isExporting = false
+    @State private var pdfData: Data?
+    @State private var showingDocumentPicker = false
+    @State private var showingAlert = false
+    @State private var alertMessage = ""
     
     // Snackbar state
     @State private var showSnackbar = false
@@ -66,6 +74,28 @@ struct InvoiceDetailView: View {
             } message: {
                 Text("آیا مطمئن هستید که می‌خواهید این فاکتور را حذف کنید؟")
                     .font(.vazirmatenBody)
+            }
+            .fileExporter(
+                isPresented: $showingDocumentPicker,
+                document: pdfData.map { PDFDocument(data: $0) },
+                contentType: .pdf,
+                defaultFilename: "Invoice_\(invoice.invoiceNumber)"
+            ) { result in
+                switch result {
+                case .success(let url):
+                    alertMessage = "فایل PDF با موفقیت ذخیره شد"
+                    showingAlert = true
+                    print("PDF saved to: \(url)")
+                case .failure(let error):
+                    alertMessage = "خطا در ذخیره فایل: \(error.localizedDescription)"
+                    showingAlert = true
+                    print("Error saving PDF: \(error)")
+                }
+            }
+            .alert("پیام", isPresented: $showingAlert) {
+                Button("باشه") { }
+            } message: {
+                Text(alertMessage)
             }
             .overlay(
                 // Snackbar
@@ -322,7 +352,7 @@ struct InvoiceDetailView: View {
             
             HStack(spacing: 12) {
                 editButton
-                copyButton
+                savePDFButton
                 deleteButton
             }
         }
@@ -347,16 +377,14 @@ struct InvoiceDetailView: View {
         .cornerRadius(10)
     }
     
-    private var copyButton: some View {
+    private var savePDFButton: some View {
         Button(action: {
-            let duplicated = storageManager.duplicateInvoice(invoice)
-            storageManager.saveInvoice(duplicated)
-            showSnackbar(message: "فاکتور کپی شد")
+            generateAndSavePDF()
         }) {
             HStack {
-                Image(systemName: "doc.on.doc.fill")
+                Image(systemName: "doc.badge.plus")
                     .font(.title2)
-                Text("کپی")
+                Text("ذخیره PDF")
                     .font(.vazirmatenBody)
             }
             .foregroundColor(.white)
@@ -399,6 +427,21 @@ struct InvoiceDetailView: View {
         .padding(.top)
     }
     
+    // MARK: - PDF Functions
+    private func generateAndSavePDF() {
+        isExporting = true
+        
+        Task {
+            let data = await PDFGenerator.generateInvoicePDF(invoice: invoice)
+            
+            DispatchQueue.main.async {
+                self.isExporting = false
+                self.pdfData = data
+                self.showingDocumentPicker = true
+            }
+        }
+    }
+    
     // MARK: - Helper Functions
     private func showSnackbar(message: String) {
         snackbarMessage = message
@@ -414,6 +457,8 @@ struct InvoiceDetailView: View {
         }
     }
 }
+
+
 
 #Preview {
     let sampleInvoice = Invoice()
