@@ -39,6 +39,8 @@ struct SavedInvoicesView: View {
                 if storageManager.savedInvoices.isEmpty {
                     // Empty State
                     VStack(spacing: 20) {
+                        Spacer()
+                        
                         Image(systemName: "doc.text")
                             .font(.system(size: 60))
                             .foregroundColor(.gray)
@@ -66,50 +68,16 @@ struct SavedInvoicesView: View {
                         .padding()
                         .background(Color.blue)
                         .cornerRadius(10)
+                        .padding(.horizontal, 40)
+                        
+                        Spacer()
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 40)
                 } else {
                     // Invoice List
                     List {
-                        // Statistics Section
-                        Section {
-                            HStack {
-                                VStack(alignment: .trailing) {
-                                    Text("\(storageManager.getTotalInvoicesCount())")
-                                        .font(.vazirmatenTitle)
-                                        .fontWeight(.bold)
-                                    Text("کل فاکتورها")
-                                        .font(.vazirmatenCaption)
-                                        .foregroundColor(.secondary)
-                                }
-                                
-                                Spacer()
-                                
-                                VStack(alignment: .trailing) {
-                                    Text(PersianNumberFormatter.shared.currencyString(from: storageManager.getTotalRevenue(), currency: .toman))
-                                        .font(.vazirmatenHeadline)
-                                        .fontWeight(.bold)
-                                        .foregroundColor(.green)
-                                    Text("کل درآمد (تومان)")
-                                        .font(.vazirmatenCaption)
-                                        .foregroundColor(.secondary)
-                                }
-                                
-                                Spacer()
-                                
-                                VStack(alignment: .trailing) {
-                                    Text("\(storageManager.getInvoicesThisMonth().count)")
-                                        .font(.vazirmatenHeadline)
-                                        .fontWeight(.bold)
-                                        .foregroundColor(.blue)
-                                    Text("این ماه")
-                                        .font(.vazirmatenCaption)
-                                        .foregroundColor(.secondary)
-                                }
-                            }
-                            .padding(.vertical, 8)
-                        }
-                        
                         // Invoices List
                         Section {
                             ForEach(filteredInvoices) { invoice in

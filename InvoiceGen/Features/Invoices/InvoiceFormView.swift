@@ -348,21 +348,36 @@ struct InvoiceFormView: View {
                     .fontWeight(.semibold)
                 
                 Spacer()
-                
-                Button(action: {
-                    withAnimation(.easeInOut(duration: 0.3)) {
-                        invoice.items.append(InvoiceItem())
-                    }
-                }) {
-                    Image(systemName: "plus.circle.fill")
-                        .foregroundColor(.blue)
-                        .font(.title2)
-                }
             }
             
             ForEach(invoice.items.indices, id: \.self) { index in
                 modernItemCard(for: index)
             }
+            
+            // Add New Product Button
+            Button(action: {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    invoice.items.append(InvoiceItem(description: "", quantity: 1, unitPrice: 0))
+                }
+            }) {
+                HStack {
+                    Image(systemName: "plus.circle.fill")
+                        .font(.title2)
+                    Text("افزودن محصول جدید")
+                        .font(.vazirmatenBody)
+                        .fontWeight(.medium)
+                }
+                .foregroundColor(.blue)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 16)
+                .background(Color(.systemBackground))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.blue, lineWidth: 2)
+                )
+                .cornerRadius(12)
+            }
+            .buttonStyle(PlainButtonStyle())
         }
     }
     
